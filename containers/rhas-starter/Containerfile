@@ -23,8 +23,8 @@ ENV ARCH=${TARGETARCH:-arm64} \
     XDG_CONFIG_HOME=/home/tooling/.config 
 
 # install this version of jumpstarter
-ENV JUMPSTARTER_VERSION=main \
-    JUMPSTARTER_REPO=https://github.com/mickume/jumpstarter
+ENV JUMPSTARTER_REPO=https://github.com/mickume/jumpstarter \
+    JUMPSTARTER_VERSION=main
 
 # Install Claude Code, using direct binary download instead of the install.sh script to avoid OOM-killing
 # the binary's post-install setup step in memory-constrained container builds.
