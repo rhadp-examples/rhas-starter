@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+source venv/bin/activate
+
+JUMPSTARTER_NAMESPACE=${JUMPSTARTER_NAMESPACE:-auto-jumpstarter}
+if [ -z "${JUMPSTARTER_LOGIN_ENDPOINT:-}" ]; then
+  # oc cluster-info -> "Kubernetes control plane is running at https://api.<base>:6443"
+  CLUSTER_API=$(oc cluster-info | awk '/Kubernetes control plane is running at/{print $NF}')
+  CLUSTER_BASE=${CLUSTER_API#https://api.}
+  CLUSTER_BASE=${CLUSTER_BASE#http://api.}
+  CLUSTER_BASE=${CLUSTER_BASE%%:*}
+  JUMPSTARTER_LOGIN_ENDPOINT="https://login.${JUMPSTARTER_NAMESPACE}.apps.${CLUSTER_BASE}"
+fi
+
+# generate location for the jumpstarter config location
+JMP_CONFIG_LOCATION=$HOME/.config/jumpstarter/clients
+mkdir -p $JMP_CONFIG_LOCATION
+
+# get the user name from the command line
+USER_NAME=$1
+
+# CLIENT_NAME normalization for used in jumpstarter/kubernetes
+CLIENT_NAME=$(echo "$USER_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9-]/-/g; s/-\+/-/g; s/^-//; s/-$//' | cut -c1-63)
+if oc get client "$CLIENT_NAME" -n $JUMPSTARTER_NAMESPACE &>/dev/null; then
+  oc delete client "$CLIENT_NAME" -n $JUMPSTARTER_NAMESPACE &>/dev/null || true
+fi
+
+# create the jumpstarter client config
+jmp admin create client $CLIENT_NAME --insecure-tls --unsafe --nointeractive -n $JUMPSTARTER_NAMESPACE --oidc-username keycloak:$USER_NAME &>/dev/null
+
+# login to jumpstarter
+jmp login --nointeractive --insecure-tls --unsafe $CLIENT_NAME@$JUMPSTARTER_LOGIN_ENDPOINT
