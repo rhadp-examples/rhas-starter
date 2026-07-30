@@ -1,0 +1,66 @@
+FROM registry.redhat.io/ubi10/go-toolset:latest as builder
+
+ARG TARGETARCH
+ENV CGO_ENABLED=0 GOARCH=${TARGETARCH}
+
+# build the caib tool
+RUN git clone https://github.com/centos-automotive-suite/automotive-dev-operator && \
+    cd automotive-dev-operator && \
+    make build-caib && \
+    chmod +x bin/caib && \
+    cp bin/caib /opt/app-root/src/caib
+
+FROM ghcr.io/rhadp/codespaces:latest
+
+USER root
+
+ARG TARGETARCH
+
+# define some environment variables
+ENV ARCH=${TARGETARCH:-arm64} \
+    HOME=/home/tooling \
+    APP_ROOT=/home/tooling \
+    XDG_CONFIG_HOME=/home/tooling/.config 
+
+# install this version of jumpstarter
+ENV JUMPSTARTER_VERSION=main \
+    JUMPSTARTER_REPO=https://github.com/mickume/jumpstarter
+
+# Install Claude Code, using direct binary download instead of the install.sh script to avoid OOM-killing
+# the binary's post-install setup step in memory-constrained container builds.
+RUN set -e; \
+    mkdir -p /home/tooling/bin /home/tooling/.claude && \
+    arch=$(uname -m | sed 's/x86_64/x64/;s/aarch64/arm64/'); \
+    if ldd /bin/ls 2>&1 | grep -q musl || [ -f /lib/libc.musl-x86_64.so.1 ] || [ -f /lib/libc.musl-aarch64.so.1 ]; then \
+        platform="linux-${arch}-musl"; \
+    else \
+        platform="linux-${arch}"; \
+    fi; \
+    version=$(curl -fsSL https://downloads.claude.ai/claude-code-releases/latest); \
+    curl -fsSL -o /home/tooling/bin/claude "https://downloads.claude.ai/claude-code-releases/${version}/${platform}/claude"; \
+    chmod +x /home/tooling/bin/claude
+
+# copy the caib tool
+COPY --from=builder /opt/app-root/src/caib /usr/local/bin/caib
+
+# set the virtual environment for jumpstarter etc
+ENV UV_PYTHON=python3.14 VIRTUAL_ENV=/venv
+
+# install jumpstarter & other python dependencies
+COPY requirements.txt /tmp/requirements.txt
+
+RUN uv venv --clear /venv && \
+    uv pip install -r /tmp/requirements.txt && \
+    uv pip install "git+${JUMPSTARTER_REPO}@${JUMPSTARTER_VERSION}#subdirectory=python/packages/jumpstarter-all" && \
+    rm -rf /tmp/requirements.txt
+
+# jmp-login script
+COPY scripts/jmp-login /usr/local/bin/jmp-login
+RUN chmod +x /usr/local/bin/jmp-login
+
+# A last pass to make sure that an arbitrary user can write in $HOME
+RUN chgrp -R 0 /home && chmod -R g=u /home
+
+USER 10001
+ENV HOME=/home/user
+WORKDIR /projects

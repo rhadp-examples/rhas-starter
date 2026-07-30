@@ -1,0 +1,26 @@
+schemaVersion: 2.3.0
+metadata:
+  name: rhas-starter
+  tags:
+    - rhivos
+    - autosd
+    - jumpstarter
+    - RHAS
+components:
+  - name: runtime
+    container:
+      image: ghcr.io/rhadp-examples/rhas-starter:latest
+      memoryLimit: "4Gi"
+      memoryRequest: "1Gi"
+      cpuLimit: "4"
+      cpuRequest: "1"
+      mountSources: true
+commands:
+  - id: init-workspace
+    exec:
+      component: runtime
+      commandLine: |
+        /usr/local/bin/init-workspace
+events:
+  postStart:
+    - init-workspace

@@ -1,0 +1,27 @@
+# Example installing and using containerized apps in the QM partition
+
+name: simple-qm-container
+
+content:
+  # The container service depends on vsomeip3-routingmanager from this repo
+  repos:
+    - id: copr-sample-apps
+      baseurl: https://download.copr.fedorainfracloud.org/results/alexl/cs9-sample-images/centos-stream-9-$arch/
+  rpms:
+    - vsomeip3-routingmanager
+
+qm:
+  content:
+    container_images:
+      - source: registry.gitlab.com/centos/automotive/sample-images/demo/auto-app
+        tag: latest
+        name: localhost/auto-app
+    add_files:
+      - path: /etc/containers/systemd/radio.container
+        source_path: ../files/radio-qm.container
+      - path: /etc/containers/systemd/engine.container
+        source_path: ../files/engine-qm.container
+
+auth:
+  # "password"
+  root_password: $6$xoLqEUz0cGGJRx01$H3H/bFm0myJPULNMtbSsOFd/2BnHqHkMD92Sfxd.EKM9hXTWSmELG8cf205l6dktomuTcgKGGtGDgtvHVXSWU.

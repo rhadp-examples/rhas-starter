@@ -1,0 +1,20 @@
+# Example of a image using a static network configuration
+
+name: simple-static-ip
+
+network:
+  static:
+    # This matches what the default qemu setup is
+    ip: "10.0.2.15"
+    ip_prefixlen: 24
+    gateway: "10.0.2.2"
+    dns: "10.0.2.3"
+    iface: eth0
+    load_module: "virtio_net"
+
+content:
+  rpms: []
+
+auth:
+  # "password"
+  root_password: $6$xoLqEUz0cGGJRx01$H3H/bFm0myJPULNMtbSsOFd/2BnHqHkMD92Sfxd.EKM9hXTWSmELG8cf205l6dktomuTcgKGGtGDgtvHVXSWU.

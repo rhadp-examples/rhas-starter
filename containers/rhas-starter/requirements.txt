@@ -1,0 +1,12 @@
+ansible
+boto3
+kubernetes
+PyGithub
+python-gitlab
+psutil
+requests
+google-auth
+google-cloud-compute
+google-auth-oauthlib
+pylint
+pyyaml
