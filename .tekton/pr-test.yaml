@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
-  name: maven-build
+  name: pr-test
   annotations:
     pipelinesascode.tekton.dev/task: "[git-clone]"
     pipelinesascode.tekton.dev/on-event: "[push,pull_request]"
@@ -53,4 +53,4 @@ spec:
             - ReadWriteOnce
           resources:
             requests:
-              storage: 1Gi
+              storage: 4Gi
