@@ -21,7 +21,7 @@ AUTOSD_TARGET ?= qemu
 JUMPSTARTER_REPO ?= https://github.com/mickume/jumpstarter
 JUMPSTARTER_VERSION ?= main
 
-.PHONY: build build-rpm build-local build-rpm-local update-repo build-autosd build-container clean
+.PHONY: local-venv build-container
 
 local-venv:
 	uv venv --clear venv
