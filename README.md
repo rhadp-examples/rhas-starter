@@ -14,7 +14,7 @@ bin/caib image build-dev manifests/minimal.aib.yml \
   --format qcow2 \
   -o ./images/minimal.qcow2
 
-# unpack and start locally
+# unpack and start localy
 gunzip images/minimal.qcow2.gz
 
 ./bin/air --nographics images/minimal.qcow2

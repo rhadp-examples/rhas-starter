@@ -1,0 +1,36 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: maven-build
+annotations:
+  pipelinesascode.tekton.dev/task: "[git-clone]"
+  pipelinesascode.tekton.dev/on-event: "[push,pull_request]"
+  pipelinesascode.tekton.dev/on-target-branch: "[main, release]"
+  #pipelinesascode.tekton.dev/on-path-changed: "[src/**]"
+  pipelinesascode.tekton.dev/cancel-in-progress: "true"
+spec:
+  podTemplate:
+    nodeSelector:
+      auto.node-role/builder: 'true'
+    #tolerations:
+    #  - key: "architecture"
+    #    operator: "Equal"
+    #    value: "arm"
+    #    effect: "NoSchedule"
+
+  pipelineSpec:
+    workspaces:
+    - name: shared-workspace
+    tasks:
+      - name: fetch-repo
+        taskRef:
+          - name: git-clone
+        params:
+        - name: url
+          value: {{ repo_url }}
+        - name: revision
+          value: {{ revision }}
+        workspaces:
+        - name: output
+          workspace: shared-workspace
+      
