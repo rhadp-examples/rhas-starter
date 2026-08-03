@@ -22,9 +22,18 @@ ENV ARCH=${TARGETARCH:-arm64} \
     APP_ROOT=/home/tooling \
     XDG_CONFIG_HOME=/home/tooling/.config 
 
-# install this version of jumpstarter
+# install this version of jumpstarter, tkn etc
 ENV JUMPSTARTER_REPO=https://github.com/mickume/jumpstarter \
-    JUMPSTARTER_VERSION=main
+    JUMPSTARTER_VERSION=main \
+    TKN_VERSION=1.23.0
+
+# Install the tkn CLI
+RUN if [ "${ARCH}" = "arm64" ]; then \
+        curl -fsSL -o /home/tooling/bin/tkn "https://mirror.openshift.com/pub/cgw/pipelines/${TKN_VERSION}/tkn-linux-arm64.tar.gz" && \
+    else \
+        curl -fsSL -o /home/tooling/bin/tkn "https://mirror.openshift.com/pub/cgw/pipelines/${TKN_VERSION}/tkn-linux-amd64.tar.gz" && \
+    fi && \
+    chmod +x /home/tooling/bin/tkn
 
 # Install Claude Code, using direct binary download instead of the install.sh script to avoid OOM-killing
 # the binary's post-install setup step in memory-constrained container builds.
