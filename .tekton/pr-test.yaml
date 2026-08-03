@@ -9,6 +9,14 @@ annotations:
   #pipelinesascode.tekton.dev/on-path-changed: "[src/**]"
   pipelinesascode.tekton.dev/cancel-in-progress: "true"
 spec:
+  params:
+    # The variable with brackets are special to Pipelines as Code
+    # They will automatically be expanded with the events from Github.
+    - name: repo_url
+      value: "{{ repo_url }}"
+    - name: revision
+      value: "{{ revision }}"
+      
   podTemplate:
     nodeSelector:
       auto.node-role/builder: 'true'
