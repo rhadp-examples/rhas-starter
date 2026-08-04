@@ -28,10 +28,11 @@ ENV JUMPSTARTER_REPO=https://github.com/mickume/jumpstarter \
     TKN_VERSION=1.23.0
 
 # Install the tkn CLI
-RUN if [ "${ARCH}" = "arm64" ]; then \
-        curl -fsSL -o /home/tooling/bin/tkn "https://mirror.openshift.com/pub/cgw/pipelines/${TKN_VERSION}/tkn-linux-arm64.tar.gz" && \
+RUN mkdir -p /home/tooling/bin && \
+    if [ "${ARCH}" = "arm64" ]; then \
+        curl -fsSL "https://mirror.openshift.com/pub/cgw/pipelines/${TKN_VERSION}/tkn-linux-arm64.tar.gz" | tar xz -C /home/tooling/bin; \
     else \
-        curl -fsSL -o /home/tooling/bin/tkn "https://mirror.openshift.com/pub/cgw/pipelines/${TKN_VERSION}/tkn-linux-amd64.tar.gz" && \
+        curl -fsSL "https://mirror.openshift.com/pub/cgw/pipelines/${TKN_VERSION}/tkn-linux-amd64.tar.gz" | tar xz -C /home/tooling/bin; \
     fi && \
     chmod +x /home/tooling/bin/tkn
 
