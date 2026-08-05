@@ -1,3 +1,19 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Extract the values from the service account   
+TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
+API_SERVER=$(oc whoami --show-server)
+POD_NAME=$(cat /etc/hostname)
+
+cat /home/user/.kube/config
+
+# set ./kube/config correctly
+mkdir -p ~/.kube
+
+# Print the values
+echo "TOKEN: $TOKEN"
+echo "NAMESPACE: $NAMESPACE"
+echo "API_SERVER: $API_SERVER"
+echo "POD_NAME: $POD_NAME"

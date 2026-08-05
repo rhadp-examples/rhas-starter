@@ -27,4 +27,3 @@ uname -r
 uname -m
 ```
 
-test 2
