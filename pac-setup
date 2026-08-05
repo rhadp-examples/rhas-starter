@@ -2,16 +2,45 @@
 set -euo pipefail
 
 GIT_PAT_NAME="${GIT_PAT_NAME:-personal-access-token-git-pac}"
+NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
 
 # Extract the values from the service account   
 TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
-NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
 API_SERVER=$(oc whoami --show-server)
 POD_NAME=$(cat /etc/hostname)
 
+# PAC endpoint setup
+PAC_ENDPOINT="https://$(oc get route -n openshift-pipelines pipelines-as-code-controller -o jsonpath='{.spec.host}')"
+
+# Create the webhook secret and retrieve the git PAT
 WEBHOOK_SECRET=$(openssl rand -hex 20)
 GIT_PAT=$(oc -n $NAMESPACE get secret $GIT_PAT_NAME -o jsonpath='{.data.token}' | base64 -d)
 
-echo "PAT: $GIT_PAT"
-echo "WEBHOOK_SECRET: $WEBHOOK_SECRET"
-echo "NAMESPACE: $NAMESPACE"
+# Create the webhook config secret
+oc -n $NAMESPACE create secret generic github-webhook-config \
+  --from-literal provider.token="$GIT_PAT" \
+  --from-literal webhook.secret="$WEBHOOK_SECRET"
+
+# Create the webhook on the upstream GitHub repository
+GIT_REMOTE_URL=$(git remote get-url upstream)
+GIT_REPO=${GIT_REMOTE_URL#*github.com[:/]}
+GIT_REPO=${GIT_REPO%.git}
+
+curl -sS -X POST \
+  -H "Accept: application/vnd.github+json" \
+  -H "Authorization: Bearer ${GIT_PAT}" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  "https://api.github.com/repos/${GIT_REPO}/hooks" \
+  -d @- <<EOF
+{
+  "name": "web",
+  "active": true,
+  "events": ["push", "pull_request", "issue_comment", "commit_comment"],
+  "config": {
+    "url": "${PAC_ENDPOINT}",
+    "content_type": "json",
+    "insecure_ssl": "0",
+    "secret": "${WEBHOOK_SECRET}"
+  }
+}
+EOF
