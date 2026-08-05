@@ -1,19 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+GIT_PAT_NAME="${GIT_PAT_NAME:-personal-access-token-git-pac}"
+
 # Extract the values from the service account   
 TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
 NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
 API_SERVER=$(oc whoami --show-server)
 POD_NAME=$(cat /etc/hostname)
 
-cat /home/user/.kube/config
+WEBHOOK_SECRET=$(openssl rand -hex 20)
+GIT_PAT=$(oc -n $NAMESPACE get secret $GIT_PAT_NAME -o jsonpath='{.data.token}' | base64 -d)
 
-# set ./kube/config correctly
-mkdir -p ~/.kube
-
-# Print the values
-echo "TOKEN: $TOKEN"
+echo "PAT: $GIT_PAT"
+echo "WEBHOOK_SECRET: $WEBHOOK_SECRET"
 echo "NAMESPACE: $NAMESPACE"
-echo "API_SERVER: $API_SERVER"
-echo "POD_NAME: $POD_NAME"
