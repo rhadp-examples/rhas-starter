@@ -71,6 +71,10 @@ RUN uv venv --clear /venv && \
 COPY scripts/jmp-login /usr/local/bin/jmp-login
 RUN chmod +x /usr/local/bin/jmp-login
 
+# pac-setup script
+COPY scripts/pac-setup /usr/local/bin/pac-setup
+RUN chmod +x /usr/local/bin/pac-setup
+
 # A last pass to make sure that an arbitrary user can write in $HOME
 RUN chgrp -R 0 /home && chmod -R g=u /home
 
