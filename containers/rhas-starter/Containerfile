@@ -3,8 +3,11 @@ FROM registry.redhat.io/ubi10/go-toolset:latest as builder
 ARG TARGETARCH
 ENV CGO_ENABLED=0 GOARCH=${TARGETARCH}
 
+ENV BUILDER_REPO=https://github.com/mickume/automotive-dev-operator \
+    BUILDER_VERSION=develop
+
 # build the caib tool
-RUN git clone https://github.com/centos-automotive-suite/automotive-dev-operator && \
+RUN git clone ${BUILDER_REPO}@${BUILDER_VERSION} && \
     cd automotive-dev-operator && \
     make build-caib && \
     chmod +x bin/caib && \

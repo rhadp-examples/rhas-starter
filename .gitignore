@@ -4,6 +4,7 @@ build/
 _build
 .secure_files
 *.tar.gz
+*.gz
 *.pem
 *.qcow2
 *.img

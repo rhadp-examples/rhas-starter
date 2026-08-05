@@ -3,6 +3,14 @@ set -euo pipefail
 
 source venv/bin/activate
 
+# generate location for the jumpstarter config location
+JMP_CONFIG_LOCATION=$HOME/.config/jumpstarter/clients
+rm -rf $JMP_CONFIG_LOCATION && mkdir -p $JMP_CONFIG_LOCATION
+
+# generate location for the caib config location
+CAIB_CONFIG_LOCATION=$HOME/.config/caib
+rm -rf $CAIB_CONFIG_LOCATION && mkdir -p $CAIB_CONFIG_LOCATION
+
 JUMPSTARTER_NAMESPACE=${JUMPSTARTER_NAMESPACE:-auto-jumpstarter}
 if [ -z "${JUMPSTARTER_LOGIN_ENDPOINT:-}" ]; then
   # oc cluster-info -> "Kubernetes control plane is running at https://api.<base>:6443"
@@ -12,10 +20,6 @@ if [ -z "${JUMPSTARTER_LOGIN_ENDPOINT:-}" ]; then
   CLUSTER_BASE=${CLUSTER_BASE%%:*}
   JUMPSTARTER_LOGIN_ENDPOINT="https://login.${JUMPSTARTER_NAMESPACE}.apps.${CLUSTER_BASE}"
 fi
-
-# generate location for the jumpstarter config location
-JMP_CONFIG_LOCATION=$HOME/.config/jumpstarter/clients
-mkdir -p $JMP_CONFIG_LOCATION
 
 # get the user name from the command line
 USER_NAME=$1
@@ -31,3 +35,6 @@ jmp admin create client $CLIENT_NAME --insecure-tls --unsafe --nointeractive -n 
 
 # login to jumpstarter
 jmp login --nointeractive --insecure-tls --unsafe $CLIENT_NAME@$JUMPSTARTER_LOGIN_ENDPOINT
+
+# create the caib client config
+bin/caib login
