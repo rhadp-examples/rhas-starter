@@ -7,7 +7,7 @@ ENV BUILDER_REPO=https://github.com/mickume/automotive-dev-operator \
     BUILDER_VERSION=develop
 
 # build the caib tool
-RUN git clone ${BUILDER_REPO}@${BUILDER_VERSION} && \
+RUN git clone -b ${BUILDER_VERSION} ${BUILDER_REPO} && \
     cd automotive-dev-operator && \
     make build-caib && \
     chmod +x bin/caib && \
