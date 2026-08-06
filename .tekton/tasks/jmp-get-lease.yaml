@@ -46,7 +46,7 @@ spec:
           #set +x
 
           CONFIG_DIR="/root/.config/jumpstarter/clients"
-          CONFIG_FILE="$CONFIG_DIR/default.yaml"
+          CONFIG_FILE="$CONFIG_DIR/$(params.client-name).yaml"
           POD_TOKEN_FILE="/var/run/secrets/kubernetes.io/serviceaccount/token"
           CONFIG_CONTENT="$(params.client-config)"
 
