@@ -46,7 +46,7 @@ spec:
           - name: output
             workspace: shared-workspace
 
-      - name: noop
+      - name: setup
         taskRef:
           name: bash
         runAfter:
@@ -54,7 +54,42 @@ spec:
         params:
           - name: cmd
             value: "pwd && ls -la"
-          
+        workspaces:
+          - name: source
+            workspace: shared-workspace
+
+      - name: build-image
+        taskRef:
+          name: bash
+        runAfter:
+          - setup
+        params:
+          - name: cmd
+            value: "pwd && ls -la"
+        workspaces:
+          - name: source
+            workspace: shared-workspace
+
+      - name: flash-image
+        taskRef:
+          name: bash
+        runAfter:
+          - build-image
+        params:
+          - name: cmd
+            value: "pwd && ls -la"
+        workspaces:
+          - name: source
+            workspace: shared-workspace
+
+      - name: validate
+        taskRef:
+          name: bash
+        runAfter:
+          - flash-image
+        params:
+          - name: cmd
+            value: "pwd && ls -la"
         workspaces:
           - name: source
             workspace: shared-workspace

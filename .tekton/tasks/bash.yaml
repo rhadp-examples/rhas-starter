@@ -19,9 +19,9 @@ spec:
 
         cd /workspace/source
 
-        echo "Executing bash command: $(params.cmd)"
+        echo "Executing bash command: '$(params.cmd)'"
         eval "$(params.cmd)"
-        
+
   workspaces:
     - name: source
       description: The workspace where the source code is located
