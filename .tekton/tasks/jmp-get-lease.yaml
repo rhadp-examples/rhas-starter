@@ -34,11 +34,12 @@ spec:
       args: ["$(params.exporter-labels[*])"]
       script: |
         #!/usr/bin/env bash
-         set -eux
+        #set -eux
+        set -x
 
-         # If the client-config parameter is provided, create and use a new client config.
-         if [ -n "$(params.client-config)" ]; then
-          set +x
+        # If the client-config parameter is provided, create and use a new client config.
+        if [ -n "$(params.client-config)" ]; then
+          #set +x
 
           CONFIG_DIR="/root/.config/jumpstarter/clients"
           CONFIG_FILE="$CONFIG_DIR/default.yaml"
@@ -53,25 +54,25 @@ spec:
           POD_TOKEN=$(cat "$POD_TOKEN_FILE")
           sed -i "s/__POD_TOKEN__/$POD_TOKEN/g" "$CONFIG_FILE"
           
-          set -x
-         fi
+          #set -x
+        fi
 
-         # Use the client name provided in the parameter
-         echo "Using the client $(params.client-name)"
-         jmp config client use $(params.client-name)
+        # Use the client name provided in the parameter
+        echo "Using the client $(params.client-name)"
+        jmp config client use $(params.client-name)
 
-         # Loop through each label provided as argument and build 
-         CLIENT_LEASE_CMD="jmp create lease"
-         for label in "$@"; do
-           IFS='=' read -r KEY VAL <<< "$label"
-           CLIENT_LEASE_CMD+=" -l $KEY=$VAL"
-         done
+        # Loop through each label provided as argument and build 
+        CLIENT_LEASE_CMD="jmp create lease"
+        for label in "$@"; do
+          IFS='=' read -r KEY VAL <<< "$label"
+          CLIENT_LEASE_CMD+=" -l $KEY=$VAL"
+        done
 
-         # Request a lease
-         JMP_LEASE_ID=$(timeout "$(params.timeout)" $CLIENT_LEASE_CMD --duration "$(params.lease-duration)" -o name) 
+        # Request a lease
+        JMP_LEASE_ID=$(timeout "$(params.timeout)" $CLIENT_LEASE_CMD --duration "$(params.lease-duration)" -o name) 
 
-         # Output the lease ID to the Tekton results
-         echo -n "$JMP_LEASE_ID" > /tekton/results/jmp-lease-id
+        # Output the lease ID to the Tekton results
+        echo -n "$JMP_LEASE_ID" > /tekton/results/jmp-lease-id
   workspaces:
     - description: Workspace for mounting Jumpstarter client files.
       mountPath: /root/.config/jumpstarter/clients

@@ -34,6 +34,7 @@ spec:
       image: quay.io/fedora/fedora-minimal:43
       script: |
         #!/usr/bin/env bash
+        set -x
 
         CONFIG_DIR=$(workspaces.config-dir.path)
         CONFIG_FILE="$CONFIG_DIR/default.yaml"

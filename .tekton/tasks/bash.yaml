@@ -15,6 +15,8 @@ spec:
       image: ghcr.io/rhadp/builder:latest
       script: |
         #!/usr/bin/env bash
+        set -x
+
         source /venv/bin/activate
 
         cd /workspace/source
