@@ -74,7 +74,7 @@ spec:
         taskRef:
           name: bash
         runAfter:
-          - build-image
+          - build
         params:
           - name: cmd
             value: "pwd && ls -la"
@@ -86,7 +86,7 @@ spec:
         taskRef:
           name: bash
         runAfter:
-          - flash-image
+          - flash
         params:
           - name: cmd
             value: "pwd && ls -la"
