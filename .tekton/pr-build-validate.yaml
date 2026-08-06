@@ -20,6 +20,8 @@ spec:
       value: "{{ repo_url }}"
     - name: revision
       value: "{{ revision }}"
+    - name: sender
+      value: "{{ sender }}"
 
   podTemplate:
     nodeSelector:
@@ -35,8 +37,6 @@ spec:
       - name: repo_url
       - name: revision
       # jumpstarter client config
-      - name: endpoint
-        default: grpc.auto-jumpstarter.apps.rhas.sandbox5328.opentlc.com
       - name: namespace
         default: auto-jumpstarter
       - name: name
@@ -58,30 +58,18 @@ spec:
       - name: shared-workspace
     
     tasks:
-      - name: clone-repo
-        taskRef:
-          name: git-clone
-        params:
-          - name: url
-            value: "$(params.repo_url)"
-          - name: revision
-            value: "$(params.revision)"
-        workspaces:
-          - name: output
-            workspace: shared-workspace
+
 
       - name: setup
         taskRef:
           name: jmp-setup-sa-client
-        runAfter:
-          - clone-repo
+        #runAfter:
+        #  - clone-repo
         params:
-          - name: endpoint
-            value: $(params.endpoint)
           - name: namespace
             value: $(params.namespace)
           - name: name
-            value: $(params.name)
+            value: $(params.sender)
           - name: insecure-tls
             value: $(params.insecure-tls)
           - name: tls-ca
@@ -110,41 +98,7 @@ spec:
           - name: jumpstarter-client-secret
             workspace: shared-workspace
 
-      - name: build
-        taskRef:
-          name: bash
-        runAfter:
-          - setup
-        params:
-          - name: cmd
-            value: "pwd && ls -la"
-        workspaces:
-          - name: source
-            workspace: shared-workspace
-
-      - name: flash
-        taskRef:
-          name: bash
-        runAfter:
-          - build
-        params:
-          - name: cmd
-            value: "pwd && ls -la"
-        workspaces:
-          - name: source
-            workspace: shared-workspace
-
-      - name: validate
-        taskRef:
-          name: bash
-        runAfter:
-          - flash
-        params:
-          - name: cmd
-            value: "pwd && ls -la"
-        workspaces:
-          - name: source
-            workspace: shared-workspace
+      
 
     finally:
       - name: release

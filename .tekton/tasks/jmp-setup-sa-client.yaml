@@ -7,11 +7,8 @@ spec:
     Create Jumpstarter client config from the user system account in Kubernetes,
     this requires that Jumpstarter is configured to trust authentication from K8s
   params:
-    - name: endpoint
-      description: "The Jumpstarter grpc endpoint"
-      type: string
     - name: namespace
-      description: "The Jumpstarter client namespace"
+      description: "The namespace where the Jumpstarter server is running"
       type: string
     - name: name
       description: "The Jumpstarter client name"
@@ -26,12 +23,16 @@ spec:
       default: ""
 
   results:
+    - name: grpc-endpoint
+      description: "The Jumpstarter grpc endpoint"
+      type: string
     - name: config
       description: "The content of the generated Jumpstarter client config file"
+      type: string
 
   steps:
     - name: setup-client
-      image: quay.io/fedora/fedora-minimal:43
+      image: ghcr.io/rhadp/runtime:latest
       script: |
         #!/usr/bin/env bash
         set -x
@@ -39,6 +40,13 @@ spec:
         CONFIG_DIR=$(workspaces.config-dir.path)
         CONFIG_FILE="$CONFIG_DIR/default.yaml"
         POD_TOKEN_FILE="/var/run/secrets/kubernetes.io/serviceaccount/token"
+        POD_TOKEN=$(cat "$POD_TOKEN_FILE")
+
+        CLUSTER_API=$(oc cluster-info | awk '/Kubernetes control plane is running at/{print $NF}')
+        CLUSTER_BASE=${CLUSTER_API#https://api.}
+        CLUSTER_BASE=${CLUSTER_BASE#http://api.}
+        CLUSTER_BASE=${CLUSTER_BASE%%:*}
+        JMP_GRPC_ENDPOINT="grpc.$(params.namespace).apps.${CLUSTER_BASE}"
 
         # generate jumpstarter client config
         cat <<-EOF > "$CONFIG_FILE"
@@ -51,7 +59,7 @@ spec:
         tls:
           insecure: $(params.insecure-tls)
           ca: \"$(params.tls-ca)\"
-        token: __POD_TOKEN__
+        token: $POD_TOKEN
 
         drivers:
           allow: []
