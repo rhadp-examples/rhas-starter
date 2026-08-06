@@ -39,7 +39,6 @@ spec:
         CONFIG_DIR=$(workspaces.config-dir.path)
         CONFIG_FILE="$CONFIG_DIR/default.yaml"
         POD_TOKEN_FILE="/var/run/secrets/kubernetes.io/serviceaccount/token"
-        POD_TOKEN=$(cat "$POD_TOKEN_FILE")
 
         # generate jumpstarter client config
         cat <<-EOF > "$CONFIG_FILE"
@@ -59,7 +58,8 @@ spec:
           unsafe: true
         EOF
 
-        cp ${CONFIG_DIR}/default.yaml $(results.config.path)
+        cat ${CONFIG_FILE} > $(results.config.path)
+  
   workspaces:
     - name: config-dir
       description: The workspace which contains Jumpstarter client config file

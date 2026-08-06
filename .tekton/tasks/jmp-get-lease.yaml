@@ -3,6 +3,8 @@ kind: Task
 metadata:
   name: jmp-get-lease
 spec:
+  description: |
+    Acquire a lease from Jumpstarter using the provided client config.
   params:
     - default: 'default'
       description: The client intending to acquire the lease.
@@ -23,15 +25,17 @@ spec:
       description: Jumpstarter client config contents, can be used instead of the workspace.
       type: string
       default: ''
+  
   results:
     - description: The Lease ID from Jumpstarter
       name: jmp-lease-id
       type: string
+  
   steps:
-    - computeResources: {}
-      image: 'quay.io/jumpstarter-dev/jumpstarter:latest'
-      name: acquire-lease
+    - name: acquire-lease
+      image: 'quay.io/jumpstarter-dev/jumpstarter:latest'      
       args: ["$(params.exporter-labels[*])"]
+
       script: |
         #!/usr/bin/env bash
         #set -eux
@@ -72,9 +76,9 @@ spec:
         JMP_LEASE_ID=$(timeout "$(params.timeout)" $CLIENT_LEASE_CMD --duration "$(params.lease-duration)" -o name) 
 
         # Output the lease ID to the Tekton results
-        echo -n "$JMP_LEASE_ID" > /tekton/results/jmp-lease-id
+        echo -n "$JMP_LEASE_ID" > $(results.jmp-lease-id.path)
+  
   workspaces:
-    - description: Workspace for mounting Jumpstarter client files.
+    - name: jumpstarter-client-secret
+      description: Workspace for mounting Jumpstarter client files.
       mountPath: /root/.config/jumpstarter/clients
-      name: jumpstarter-client-secret
-      
