@@ -61,6 +61,8 @@ spec:
           #set -x
         fi
 
+        cat "$CONFIG_FILE"
+
         # Use the client name provided in the parameter
         echo "Using the client $(params.client-name)"
         jmp config client use $(params.client-name)
