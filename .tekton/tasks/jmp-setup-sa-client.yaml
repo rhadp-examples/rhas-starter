@@ -55,7 +55,7 @@ spec:
         metadata:
           namespace: $(params.namespace)
           name: $(params.name)
-        endpoint: $(params.endpoint)
+        endpoint: $JMP_GRPC_ENDPOINT
         tls:
           insecure: $(params.insecure-tls)
           ca: \"$(params.tls-ca)\"
