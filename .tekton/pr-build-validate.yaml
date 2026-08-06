@@ -3,20 +3,41 @@ kind: PipelineRun
 metadata:
   name: pr-test
   annotations:
+    # pipeline tasks
     pipelinesascode.tekton.dev/task: "[git-clone]"
     pipelinesascode.tekton.dev/task-1: ".tekton/tasks/bash.yaml"
+    pipelinesascode.tekton.dev/task-2: ".tekton/tasks/jmp-setup-sa-client.yaml"
+    pipelinesascode.tekton.dev/task-3: ".tekton/tasks/jmp-get-lease.yaml"
+    # pipeline events
     pipelinesascode.tekton.dev/on-event: "[push,pull_request]"
     pipelinesascode.tekton.dev/on-target-branch: "[main, release]"
     #pipelinesascode.tekton.dev/on-path-changed: "[src/**]"
     pipelinesascode.tekton.dev/cancel-in-progress: "true"
 spec:
   params:
-    # The variable with brackets are special to Pipelines as Code
-    # They will automatically be expanded with the events from Github.
+    # git repository
     - name: repo_url
       value: "{{ repo_url }}"
     - name: revision
       value: "{{ revision }}"
+    # jumpstarter client config
+    - name: endpoint
+      default: grpc.jumpstarter.apps.cluster.com:443
+    - name: namespace
+      default: auto-jumpstarter
+    - name: name
+      default: rhas-starter
+    - name: insecure-tls
+      default: "true"
+    - name: tls-ca
+      default: ""
+    - name: exporter-labels
+      type: array
+      default: ["device=test-device"]
+    - name: lease-timeout
+      default: "3600"
+    - name: lease-duration
+      default: "01:00:00"
 
   podTemplate:
     nodeSelector:
@@ -48,14 +69,42 @@ spec:
 
       - name: setup
         taskRef:
-          name: bash
+          name: jmp-setup-sa-client
         runAfter:
           - clone-repo
         params:
-          - name: cmd
-            value: "pwd && ls -la"
+          - name: endpoint
+            value: $(params.endpoint)
+          - name: namespace
+            value: $(params.namespace)
+          - name: name
+            value: $(params.name)
+          - name: insecure-tls
+            value: $(params.insecure-tls)
+          - name: tls-ca
+            value: $(params.tls-ca)
         workspaces:
-          - name: source
+          - name: config-dir
+            workspace: shared-workspace
+
+      - name: get-lease
+        taskRef:
+          name: jmp-get-lease
+        runAfter:
+          - setup
+        params:
+          - name: client-name
+            value: $(params.name)
+          - name: exporter-labels
+            value: $(params.exporter-labels)
+          - name: timeout
+            value: $(params.lease-timeout)
+          - name: lease-duration
+            value: $(params.lease-duration)
+          - name: client-config
+            value: $(tasks.setup-client.results.config)
+        workspaces:
+          - name: jumpstarter-client-secret
             workspace: shared-workspace
 
       - name: build
@@ -69,7 +118,7 @@ spec:
         workspaces:
           - name: source
             workspace: shared-workspace
-
+      
       - name: flash
         taskRef:
           name: bash
