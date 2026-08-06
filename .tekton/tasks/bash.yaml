@@ -4,10 +4,10 @@ metadata:
   name: bash
 spec:
   description: |
-     Download an asset from the internet.
+     Exceute bash commands in a container with the tools needed for RHAS development.
   params:
-    - name: url
-      description: "URL to download"
+    - name: cmd
+      description: "Bash command to execute"
       type: string
 
   steps:
@@ -17,17 +17,11 @@ spec:
         #!/usr/bin/env bash
         source /venv/bin/activate
 
-        echo "ls -la /workspace/source" && ls -la /workspace/source
+        cd /workspace/source
 
-        echo "testing tools..."
-        uv --version
-        uv pip list
-        oc version
-        jmp version
-        caib --version
-
-
-
+        echo "Executing bash command: $(params.cmd)"
+        eval "$(params.cmd)"
+        
   workspaces:
     - name: source
       description: The workspace where the source code is located
