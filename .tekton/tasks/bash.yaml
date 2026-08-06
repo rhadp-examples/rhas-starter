@@ -15,12 +15,17 @@ spec:
       image: ghcr.io/rhadp/builder:latest
       script: |
         #!/usr/bin/env bash
+        source /venv/bin/activate
 
-        pwd
-        ls -la
-
-        echo "ls -la /" && ls -la /
         echo "ls -la /workspace/source" && ls -la /workspace/source
+
+        echo "testing tools..."
+        uv --version
+        uv pip list
+        oc version
+        jmp version
+        caib --version
+
 
 
   workspaces:
