@@ -56,6 +56,7 @@ spec:
     
     workspaces:
       - name: shared-workspace
+    
     tasks:
       - name: clone-repo
         taskRef:
@@ -98,7 +99,7 @@ spec:
           - name: client-name
             value: $(params.name)
           - name: exporter-labels
-            value: $(params.exporter-labels)
+            value: $(params.exporter-labels[*])
           - name: timeout
             value: $(params.lease-timeout)
           - name: lease-duration
