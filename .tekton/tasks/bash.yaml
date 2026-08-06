@@ -19,7 +19,8 @@ spec:
         pwd
         ls -la
 
-        echo "/\n\n" && ls -la /
+        echo "ls -la /" && ls -la /
+        echo "ls -la /workspace" && ls -la /workspace
 
 
   workspaces:
