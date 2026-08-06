@@ -15,33 +15,15 @@ metadata:
     pipelinesascode.tekton.dev/cancel-in-progress: "true"
 spec:
   params:
-    # git repository
+    # git repository (PAC template vars)
     - name: repo_url
       value: "{{ repo_url }}"
     - name: revision
       value: "{{ revision }}"
-    # jumpstarter client config
-    - name: endpoint
-      default: grpc.jumpstarter.apps.cluster.com:443
-    - name: namespace
-      default: auto-jumpstarter
-    - name: name
-      default: rhas-starter
-    - name: insecure-tls
-      default: "true"
-    - name: tls-ca
-      default: ""
-    - name: exporter-labels
-      type: array
-      default: ["device=test-device"]
-    - name: lease-timeout
-      default: "3600"
-    - name: lease-duration
-      default: "01:00:00"
 
   podTemplate:
     nodeSelector:
-      auto.node-role/builder: 'true'
+      auto.node-role/builder: "true"
     #tolerations:
     #  - key: "architecture"
     #    operator: "equal"
@@ -52,6 +34,26 @@ spec:
     params:
       - name: repo_url
       - name: revision
+      # jumpstarter client config
+      - name: endpoint
+        default: grpc.auto-jumpstarter.apps.rhas.sandbox5328.opentlc.com
+      - name: namespace
+        default: auto-jumpstarter
+      - name: name
+        default: rhas-starter
+      - name: insecure-tls
+        default: "true"
+      - name: tls-ca
+        default: ""
+      - name: exporter-labels
+        type: array
+        default:
+          - "device=test-device"
+      - name: lease-timeout
+        default: "3600"
+      - name: lease-duration
+        default: "00:20:00"
+    
     workspaces:
       - name: shared-workspace
     tasks:
@@ -102,7 +104,7 @@ spec:
           - name: lease-duration
             value: $(params.lease-duration)
           - name: client-config
-            value: $(tasks.setup-client.results.config)
+            value: $(tasks.setup.results.config)
         workspaces:
           - name: jumpstarter-client-secret
             workspace: shared-workspace
@@ -118,7 +120,7 @@ spec:
         workspaces:
           - name: source
             workspace: shared-workspace
-      
+
       - name: flash
         taskRef:
           name: bash
