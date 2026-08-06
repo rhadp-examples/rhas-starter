@@ -41,7 +41,7 @@ spec:
         POD_TOKEN=$(cat "$POD_TOKEN_FILE")
 
         # generate jumpstarter client config
-+       cat <<-EOF > "${CONFIG_DIR}/default.yaml"
+        cat <<-EOF > "$CONFIG_FILE"
         apiVersion: jumpstarter.dev/v1alpha1
         kind: ClientConfig
         metadata:
