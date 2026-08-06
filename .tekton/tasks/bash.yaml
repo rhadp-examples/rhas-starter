@@ -19,6 +19,9 @@ spec:
         pwd
         ls -la
 
+        echo "/\n\n" && ls -la /
+
+
   workspaces:
     - name: source
       description: The workspace where the source code is located
