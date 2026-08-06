@@ -4,6 +4,7 @@ metadata:
   name: pr-test
   annotations:
     pipelinesascode.tekton.dev/task: "[git-clone]"
+    pipelinesascode.tekton.dev/task-1: ".tekton/tasks/bash.yaml"
     pipelinesascode.tekton.dev/on-event: "[push,pull_request]"
     pipelinesascode.tekton.dev/on-target-branch: "[main, release]"
     #pipelinesascode.tekton.dev/on-path-changed: "[src/**]"
@@ -33,7 +34,7 @@ spec:
     workspaces:
       - name: shared-workspace
     tasks:
-      - name: fetch-repo
+      - name: clone-repo
         taskRef:
           name: git-clone
         params:
@@ -43,6 +44,19 @@ spec:
             value: "$(params.revision)"
         workspaces:
           - name: output
+            workspace: shared-workspace
+
+      - name: noop
+        taskRef:
+          name: bash
+        runAfter:
+          - clone-repo
+        params:
+          - name: url
+            value: "$(params.repo_url)"
+          
+        workspaces:
+          - name: source
             workspace: shared-workspace
 
   workspaces:

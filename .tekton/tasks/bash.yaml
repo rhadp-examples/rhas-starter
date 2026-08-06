@@ -1,0 +1,24 @@
+kind: Task
+apiVersion: tekton.dev/v1beta1
+metadata:
+  name: bash
+spec:
+  description: |
+     Download an asset from the internet.
+  params:
+    - name: url
+      description: "URL to download"
+      type: string
+
+  steps:
+    - name: bash
+      image: ghcr.io/rhadp/builder:latest
+      script: |
+        #!/usr/bin/env bash
+
+        pwd
+        ls -la
+
+  workspaces:
+    - name: source
+      description: The workspace where the source code is located
