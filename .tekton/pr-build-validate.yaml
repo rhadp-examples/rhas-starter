@@ -98,8 +98,6 @@ spec:
           - name: jumpstarter-client-secret
             workspace: shared-workspace
 
-      
-
     finally:
       - name: release
         taskRef:
