@@ -67,6 +67,10 @@ spec:
           unsafe: true
         EOF
 
+        # debug
+        USER_NAME=`cat /config/user/profile/name`
+        echo $USER_NAME
+
         cat ${CONFIG_FILE} > $(results.config.path)
         echo $JMP_GRPC_ENDPOINT > $(results.grpc-endpoint.path)
   
