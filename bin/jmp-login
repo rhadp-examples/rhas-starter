@@ -3,21 +3,30 @@ set -euo pipefail
 
 source venv/bin/activate
 
-# generate location for the jumpstarter config location
+# prepare the environment
+# oc cluster-info -> "Kubernetes control plane is running at https://api.<base>:6443"
+CLUSTER_API=$(oc cluster-info | awk '/Kubernetes control plane is running at/{print $NF}')
+CLUSTER_BASE=${CLUSTER_API#https://api.}
+CLUSTER_BASE=${CLUSTER_BASE#http://api.}
+CLUSTER_BASE=${CLUSTER_BASE%%:*}
+
+# generate location for the jumpstarter config
 JMP_CONFIG_LOCATION=$HOME/.config/jumpstarter/clients
 rm -rf $JMP_CONFIG_LOCATION && mkdir -p $JMP_CONFIG_LOCATION
 
-# generate location for the caib config location
+# generate location for the caib config
 CAIB_CONFIG_LOCATION=$HOME/.config/caib
+CAIB_CONFIG_FILE=$CAIB_CONFIG_LOCATION/cli.json
 rm -rf $CAIB_CONFIG_LOCATION && mkdir -p $CAIB_CONFIG_LOCATION
 
+BUILDER_NAMESPACE=${BUILDER_NAMESPACE:-automotive-dev-operator-system}
+if [ -z "${CAIB_SERVER:-}" ]; then
+  CAIB_SERVER="https://do-build-api.${BUILDER_NAMESPACE}.apps.${CLUSTER_BASE}"
+fi
+
+# prepare the jumpstarter login endpoint
 JUMPSTARTER_NAMESPACE=${JUMPSTARTER_NAMESPACE:-auto-jumpstarter}
 if [ -z "${JUMPSTARTER_LOGIN_ENDPOINT:-}" ]; then
-  # oc cluster-info -> "Kubernetes control plane is running at https://api.<base>:6443"
-  CLUSTER_API=$(oc cluster-info | awk '/Kubernetes control plane is running at/{print $NF}')
-  CLUSTER_BASE=${CLUSTER_API#https://api.}
-  CLUSTER_BASE=${CLUSTER_BASE#http://api.}
-  CLUSTER_BASE=${CLUSTER_BASE%%:*}
   JUMPSTARTER_LOGIN_ENDPOINT="https://login.${JUMPSTARTER_NAMESPACE}.apps.${CLUSTER_BASE}"
 fi
 
@@ -29,6 +38,8 @@ CLIENT_NAME=$(echo "$USER_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-
 if oc get client "$CLIENT_NAME" -n $JUMPSTARTER_NAMESPACE &>/dev/null; then
   oc delete client "$CLIENT_NAME" -n $JUMPSTARTER_NAMESPACE &>/dev/null || true
 fi
+JMP_CONFIG_FILE=$JMP_CONFIG_LOCATION/$CLIENT_NAME.yaml
+USER_NAMESPACE="$CLIENT_NAME-devspaces"
 
 # create the jumpstarter client config
 jmp admin create client $CLIENT_NAME --insecure-tls --unsafe --nointeractive -n $JUMPSTARTER_NAMESPACE --oidc-username keycloak:$USER_NAME &>/dev/null
@@ -37,4 +48,9 @@ jmp admin create client $CLIENT_NAME --insecure-tls --unsafe --nointeractive -n 
 jmp login --nointeractive --insecure-tls --unsafe $CLIENT_NAME@$JUMPSTARTER_LOGIN_ENDPOINT
 
 # create the caib client config
-bin/caib login
+bin/caib login $CAIB_SERVER
+
+# create the rhas client config
+oc -n $USER_NAMESPACE create secret generic rhas-client-config \
+  --from-literal jmp.config="$(cat $JMP_CONFIG_FILE)" \
+  --from-literal caib.config="$(cat $CAIB_CONFIG_FILE)"

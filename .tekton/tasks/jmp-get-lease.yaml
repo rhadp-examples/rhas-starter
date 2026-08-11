@@ -10,6 +10,10 @@ spec:
       description: The client intending to acquire the lease.
       name: client-name
       type: string
+    - name: 'client-config'
+      description: Path to the Jumpstarter client config file.
+      type: string
+      default: ''
     - description: A list of label exporters in the format key=value.
       name: exporter-labels
       type: array
@@ -21,10 +25,7 @@ spec:
       description: Maximum time (in HH:MM:SS format) for holding lease before relasing it.
       name: lease-duration
       type: string
-    - name: 'client-config'
-      description: Jumpstarter client config contents, can be used instead of the workspace.
-      type: string
-      default: ''
+    
   
   results:
     - description: The Lease ID from Jumpstarter

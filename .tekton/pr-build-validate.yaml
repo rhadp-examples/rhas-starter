@@ -71,10 +71,6 @@ spec:
             value: $(params.namespace)
           - name: name
             value: $(params.sender)
-          - name: insecure-tls
-            value: $(params.insecure-tls)
-          - name: tls-ca
-            value: $(params.tls-ca)
         workspaces:
           - name: config-dir
             workspace: shared-workspace
@@ -87,14 +83,15 @@ spec:
         params:
           - name: client-name
             value: $(params.sender)
+          - name: client-config
+            value: $(tasks.setup.results.config-path)
           - name: exporter-labels
             value: $(params.exporter-labels[*])
           - name: timeout
             value: $(params.lease-timeout)
           - name: lease-duration
             value: $(params.lease-duration)
-          - name: client-config
-            value: $(tasks.setup.results.config)
+          
         workspaces:
           - name: jumpstarter-client-secret
             workspace: shared-workspace

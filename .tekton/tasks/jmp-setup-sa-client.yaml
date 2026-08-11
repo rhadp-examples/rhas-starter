@@ -13,21 +13,13 @@ spec:
     - name: name
       description: "The Jumpstarter client name"
       type: string
-    - name: insecure-tls
-      description: "Use insecure tls for grpc"
-      type: string
-      default: "false"
-    - name: tls-ca
-      description: "CA Cert for the TLS endpoint"
-      type: string
-      default: ""
 
   results:
     - name: grpc-endpoint
       description: "The Jumpstarter grpc endpoint"
       type: string
-    - name: config
-      description: "The content of the generated Jumpstarter client config file"
+    - name: config-path
+      description: "Path to the generated Jumpstarter client config file"
       type: string
 
   steps:
@@ -39,6 +31,11 @@ spec:
           configMapKeyRef:
             name: jumpstarter-devspaces-config
             key: JUMPSTARTER_GRPC_ENDPOINT
+      - name: JMP_CLIENT_CONFIG
+        valueFrom:
+          secretKeyRef:
+            name: rhas-client-config
+            key: jmp.config
 
       script: |
         #!/usr/bin/env bash
@@ -60,50 +57,25 @@ spec:
           --server=$API_SERVER \
           --certificate-authority=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
 
-        oc config set-credentials basic-exporter \
+        oc config set-credentials rhas-setup \
           --token=$POD_TOKEN
 
-        oc config set-context basic-exporter-ctx \
+        oc config set-context rhas-setup-ctx \
           --cluster=rhas \
-          --user=basic-exporter \
+          --user=rhas-setup \
           --namespace=$NAMESPACE
 
-        oc config use-context basic-exporter-ctx
+        oc config use-context rhas-setup-ctx
 
         # setup the jmp infrastructure
+        CONFIG_DIR=$(workspaces.config-dir.path)/.config/jumpstarter/clients
+        mkdir -p $CONFIG_DIR
+        CONFIG_FILE="$CONFIG_DIR/$(params.name).yaml"
 
-        CONFIG_DIR=$(workspaces.config-dir.path)
-        CONFIG_FILE="$CONFIG_DIR/default.yaml"
-
-        # generate jumpstarter client config
-        cat <<-EOF > "$CONFIG_FILE"
-        apiVersion: jumpstarter.dev/v1alpha1
-        kind: ClientConfig
-        metadata:
-          namespace: $(params.namespace)
-          name: $(params.name)
-        endpoint: $JMP_GRPC_ENDPOINT
-        tls:
-          insecure: $(params.insecure-tls)
-          ca: \"$(params.tls-ca)\"
-        token: $POD_TOKEN
-
-        drivers:
-          allow: []
-          unsafe: true
-        EOF
-
-        # create a jmp client
-        # CLIENT_NAME normalization for used in jumpstarter/kubernetes
-        CLIENT_NAME=$(echo "$(params.name)" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9-]/-/g; s/-\+/-/g; s/^-//; s/-$//' | cut -c1-63)
-        if oc get client "$CLIENT_NAME" -n $(params.namespace) &>/dev/null; then
-          oc delete client "$CLIENT_NAME" -n $(params.namespace) &>/dev/null || true
-        fi
-
-        jmp admin create client $CLIENT_NAME --insecure-tls --unsafe --nointeractive -n $(params.namespace) --oidc-username keycloak:$(params.name)
+        cat $JMP_CLIENT_CONFIG > $CONFIG_FILE
 
         # return the config
-        cat ${CONFIG_FILE} > $(results.config.path)
+        echo ${CONFIG_FILE} > $(results.config-path.path)
         echo $JMP_GRPC_ENDPOINT > $(results.grpc-endpoint.path)
   
   workspaces:
