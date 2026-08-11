@@ -49,6 +49,8 @@ spec:
         POD_TOKEN_FILE="/var/run/secrets/kubernetes.io/serviceaccount/token"
         POD_TOKEN=$(cat "$POD_TOKEN_FILE")
 
+        echo $CONFIG_DIR
+
         # generate jumpstarter client config
         cat <<-EOF > "$CONFIG_FILE"
         apiVersion: jumpstarter.dev/v1alpha1
