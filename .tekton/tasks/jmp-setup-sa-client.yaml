@@ -93,7 +93,7 @@ spec:
           unsafe: true
         EOF
 
-        # debug
+        # create a jmp client
         # CLIENT_NAME normalization for used in jumpstarter/kubernetes
         CLIENT_NAME=$(echo "$(params.name)" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9-]/-/g; s/-\+/-/g; s/^-//; s/-$//' | cut -c1-63)
         if oc get client "$CLIENT_NAME" -n $(params.namespace) &>/dev/null; then
@@ -102,6 +102,7 @@ spec:
 
         jmp admin create client $CLIENT_NAME --insecure-tls --unsafe --nointeractive -n $(params.namespace) --oidc-username keycloak:$(params.name)
 
+        # return the config
         cat ${CONFIG_FILE} > $(results.config.path)
         echo $JMP_GRPC_ENDPOINT > $(results.grpc-endpoint.path)
   

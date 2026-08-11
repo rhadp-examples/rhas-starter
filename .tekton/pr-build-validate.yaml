@@ -79,19 +79,39 @@ spec:
           - name: config-dir
             workspace: shared-workspace
 
-      - name: debug
+      - name: get-lease
         taskRef:
-          name: bash
+          name: jmp-get-lease
         runAfter:
           - setup
         params:
-          - name: cmd
-            value: "pwd && ls -la && ls -la $HOME && echo $HOME"
+          - name: client-name
+            value: $(params.name)
+          - name: exporter-labels
+            value: $(params.exporter-labels[*])
+          - name: timeout
+            value: $(params.lease-timeout)
+          - name: lease-duration
+            value: $(params.lease-duration)
+          - name: client-config
+            value: $(tasks.setup.results.config)
         workspaces:
           - name: source
             workspace: shared-workspace
-          #- name: config-dir
-          #  workspace: shared-workspace
+
+      #- name: debug
+      #  taskRef:
+      #    name: bash
+      #  runAfter:
+      #    - setup
+      #  params:
+      #    - name: cmd
+      #      value: "pwd && ls -la && ls -la $HOME && echo $HOME"
+      #  workspaces:
+      #    - name: source
+      #      workspace: shared-workspace
+      #    #- name: config-dir
+      #    #  workspace: shared-workspace
 
   workspaces:
     - name: shared-workspace
