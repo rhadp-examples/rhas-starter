@@ -75,7 +75,7 @@ spec:
         printf '%s\n' "$JMP_CLIENT_CONFIG" > "$CONFIG_FILE"
 
         # return the config
-        echo ".config/jumpstarter/clients/$(params.name).yaml" > $(results.config-path.path)
+        echo $CONFIG_FILE > $(results.config-path.path)
         echo $JMP_GRPC_ENDPOINT > $(results.grpc-endpoint.path)
   
   workspaces:
