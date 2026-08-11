@@ -43,6 +43,7 @@ spec:
       script: |
         #!/usr/bin/env bash
         set -x
+        source /venv/bin/activate
 
         CONFIG_DIR=$(workspaces.config-dir.path)
         CONFIG_FILE="$CONFIG_DIR/default.yaml"
