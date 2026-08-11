@@ -45,6 +45,30 @@ spec:
         set -x
         source /venv/bin/activate
 
+        # Extract the values from the service account
+        TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+        NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
+        API_SERVER=$(oc whoami --show-server)
+
+        # set ./kube/config correctly
+        mkdir -p ~/.kube
+
+        oc config set-cluster rhas \
+          --server=$API_SERVER \
+          --certificate-authority=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+
+        oc config set-credentials basic-exporter \
+          --token=$TOKEN
+
+        oc config set-context basic-exporter-ctx \
+          --cluster=rhas \
+          --user=basic-exporter \
+          --namespace=$NAMESPACE
+
+        oc config use-context basic-exporter-ctx
+
+        # setup the jmp infrastructure
+
         CONFIG_DIR=$(workspaces.config-dir.path)
         CONFIG_FILE="$CONFIG_DIR/default.yaml"
         POD_TOKEN_FILE="/var/run/secrets/kubernetes.io/serviceaccount/token"
