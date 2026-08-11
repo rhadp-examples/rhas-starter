@@ -68,8 +68,11 @@ spec:
         EOF
 
         # debug
-        USER_NAME=`cat /config/user/profile/name`
-        echo $USER_NAME
+        # CLIENT_NAME normalization for used in jumpstarter/kubernetes
+        CLIENT_NAME=$(echo "$(params.name)" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9-]/-/g; s/-\+/-/g; s/^-//; s/-$//' | cut -c1-63)
+        if oc get client "$CLIENT_NAME" -n $(params.namespace) &>/dev/null; then
+          oc delete client "$CLIENT_NAME" -n $(params.namespace) &>/dev/null || true
+        fi
 
         cat ${CONFIG_FILE} > $(results.config.path)
         echo $JMP_GRPC_ENDPOINT > $(results.grpc-endpoint.path)
