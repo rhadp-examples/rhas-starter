@@ -48,6 +48,7 @@ spec:
         CONFIG_CONTENT=$(cat $CONFIG_CONTENT_PATH)
         
         pwd
+        ls -la
         ls -la /workspace
         cat $CONFIG_CONTENT_PATH
 
@@ -84,6 +85,8 @@ spec:
         #echo -n "$JMP_LEASE_ID" > $(results.jmp-lease-id.path)
   
   workspaces:
+    - name: config-dir
+      description: The workspace which contains Jumpstarter client config file
     - name: jumpstarter-client-secret
       description: Workspace for mounting Jumpstarter client files.
       mountPath: /root/.config/jumpstarter/clients

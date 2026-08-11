@@ -93,6 +93,8 @@ spec:
             value: $(params.lease-duration)
           
         workspaces:
+          - name: config-dir
+            workspace: shared-workspace
           - name: jumpstarter-client-secret
             workspace: shared-workspace
 
