@@ -74,6 +74,8 @@ spec:
           oc delete client "$CLIENT_NAME" -n $(params.namespace) &>/dev/null || true
         fi
 
+        jmp admin create client $CLIENT_NAME --insecure-tls --unsafe --nointeractive -n $(params.namespace) --oidc-username keycloak:$USER_NAME
+
         cat ${CONFIG_FILE} > $(results.config.path)
         echo $JMP_GRPC_ENDPOINT > $(results.grpc-endpoint.path)
   
