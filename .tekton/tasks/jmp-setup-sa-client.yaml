@@ -72,9 +72,9 @@ spec:
         mkdir -p $CONFIG_DIR
         CONFIG_FILE="$CONFIG_DIR/$(params.name).yaml"
 
-        cat $JMP_CLIENT_CONFIG > $CONFIG_FILE
+        printf '%s\n' "$JMP_CLIENT_CONFIG" > "$CONFIG_FILE"
 
-        cat $CONFIG_FILE
+        cat "$CONFIG_FILE"
 
         # return the config
         echo ${CONFIG_FILE} > $(results.config-path.path)
