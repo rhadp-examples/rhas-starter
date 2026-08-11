@@ -6,7 +6,7 @@ metadata:
     # pipeline tasks
     pipelinesascode.tekton.dev/task: "[git-clone]"
     pipelinesascode.tekton.dev/task-1: ".tekton/tasks/bash.yaml"
-    pipelinesascode.tekton.dev/task-2: ".tekton/tasks/jmp-setup-sa-client.yaml"
+    pipelinesascode.tekton.dev/task-2: ".tekton/tasks/jmp-setup-client.yaml"
     pipelinesascode.tekton.dev/task-3: ".tekton/tasks/jmp-get-lease.yaml"
     # pipeline events
     pipelinesascode.tekton.dev/on-event: "[push,pull_request]"
@@ -63,7 +63,7 @@ spec:
 
       - name: setup
         taskRef:
-          name: jmp-setup-sa-client
+          name: jmp-setup-client
         #runAfter:
         #  - clone-repo
         params:
