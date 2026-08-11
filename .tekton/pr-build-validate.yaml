@@ -86,7 +86,7 @@ spec:
           - setup
         params:
           - name: cmd
-            value: "pwd && ls -la && cat default.yaml"
+            value: "pwd && ls -la && ls -la $HOME && echo $HOME"
         workspaces:
           - name: source
             workspace: shared-workspace
