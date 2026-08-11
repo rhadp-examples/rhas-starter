@@ -47,6 +47,8 @@ spec:
         CONFIG_CONTENT_PATH="$(params.client-config)"
         CONFIG_CONTENT=$(cat $CONFIG_CONTENT_PATH)
         
+        cat $CONFIG_CONTENT_PATH
+        
         # If the client-config parameter is provided, create and use a new client config.
         if [ -n "$(params.client-config)" ]; then
           #set +x
