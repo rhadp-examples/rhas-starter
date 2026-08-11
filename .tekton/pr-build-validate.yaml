@@ -86,7 +86,7 @@ spec:
           - setup
         params:
           - name: client-name
-            value: $(params.name)
+            value: $(params.sender)
           - name: exporter-labels
             value: $(params.exporter-labels[*])
           - name: timeout
