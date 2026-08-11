@@ -46,7 +46,8 @@ spec:
         source /venv/bin/activate
 
         # Extract the values from the service account
-        TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+        POD_TOKEN_FILE="/var/run/secrets/kubernetes.io/serviceaccount/token"
+        POD_TOKEN=$(cat "$POD_TOKEN_FILE")
         NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
         API_SERVER=$(oc whoami --show-server)
 
@@ -58,7 +59,7 @@ spec:
           --certificate-authority=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
 
         oc config set-credentials basic-exporter \
-          --token=$TOKEN
+          --token=$POD_TOKEN
 
         oc config set-context basic-exporter-ctx \
           --cluster=rhas \
@@ -71,8 +72,6 @@ spec:
 
         CONFIG_DIR=$(workspaces.config-dir.path)
         CONFIG_FILE="$CONFIG_DIR/default.yaml"
-        POD_TOKEN_FILE="/var/run/secrets/kubernetes.io/serviceaccount/token"
-        POD_TOKEN=$(cat "$POD_TOKEN_FILE")
 
         # generate jumpstarter client config
         cat <<-EOF > "$CONFIG_FILE"
