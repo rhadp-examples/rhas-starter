@@ -79,35 +79,18 @@ spec:
           - name: config-dir
             workspace: shared-workspace
 
-      - name: get-lease
+      - name: debug
         taskRef:
-          name: jmp-get-lease
+          name: bash
         runAfter:
           - setup
         params:
-          - name: client-name
-            value: $(params.name)
-          - name: exporter-labels
-            value: $(params.exporter-labels[*])
-          - name: timeout
-            value: $(params.lease-timeout)
-          - name: lease-duration
-            value: $(params.lease-duration)
-          - name: client-config
-            value: $(tasks.setup.results.config)
-        workspaces:
-          - name: jumpstarter-client-secret
-            workspace: shared-workspace
-
-    finally:
-      - name: release
-        taskRef:
-          name: bash
-        params:
           - name: cmd
-            value: "pwd && ls -la"
+            value: "pwd && ls -la && ls -la /workspace/source && ls -la /workspace/config-dir"
         workspaces:
           - name: source
+            workspace: shared-workspace
+          - name: config-dir
             workspace: shared-workspace
 
   workspaces:
