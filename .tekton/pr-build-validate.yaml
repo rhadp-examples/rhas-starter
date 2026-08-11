@@ -96,7 +96,7 @@ spec:
           - name: client-config
             value: $(tasks.setup.results.config)
         workspaces:
-          - name: source
+          - name: jumpstarter-client-secret
             workspace: shared-workspace
 
       #- name: debug
