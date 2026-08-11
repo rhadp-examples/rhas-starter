@@ -42,15 +42,14 @@ spec:
         #set -eux
         set -x
 
-        whoami
+        CONFIG_DIR="/root/.config/jumpstarter/clients"
+        CONFIG_FILE="$CONFIG_DIR/$(params.client-name).yaml"
+        CONFIG_CONTENT_PATH="$(params.client-config)"
+        CONFIG_CONTENT=$(cat $CONFIG_CONTENT_PATH)
         
         # If the client-config parameter is provided, create and use a new client config.
         if [ -n "$(params.client-config)" ]; then
           #set +x
-
-          CONFIG_DIR="/root/.config/jumpstarter/clients"
-          CONFIG_FILE="$CONFIG_DIR/$(params.client-name).yaml"
-          CONFIG_CONTENT="$(params.client-config)"
 
           # Create the config directory if it doesn't exist and write the config content to a file
           mkdir -p "$CONFIG_DIR"
