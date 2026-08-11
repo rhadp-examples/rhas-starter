@@ -48,7 +48,7 @@ spec:
         CONFIG_CONTENT=$(cat $CONFIG_CONTENT_PATH)
         
         pwd
-        ls -la
+        ls -la /workspace
         cat $CONFIG_CONTENT_PATH
 
         # If the client-config parameter is provided, create and use a new client config.
