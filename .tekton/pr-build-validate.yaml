@@ -36,6 +36,7 @@ spec:
     params:
       - name: repo_url
       - name: revision
+      - name: sender
       # jumpstarter client config
       - name: namespace
         default: auto-jumpstarter

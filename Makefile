@@ -19,14 +19,13 @@ AUTOSD_IMAGE ?= images/auto-app-autosd.qcow2
 AUTOSD_TARGET ?= qemu
 
 JUMPSTARTER_REPO ?= https://github.com/mickume/jumpstarter
-JUMPSTARTER_VERSION ?= main
+JUMPSTARTER_VERSION ?= develop
 
 .PHONY: local-venv build-container
 
 local-venv:
 	uv venv --clear venv
 	source venv/bin/activate && \
-	uv pip install -r containers/rhas-starter/requirements.txt && \
 	uv pip install "git+$(JUMPSTARTER_REPO)@$(JUMPSTARTER_VERSION)#subdirectory=python/packages/jumpstarter-all"
 
 build-container:

@@ -33,6 +33,13 @@ spec:
   steps:
     - name: setup-client
       image: ghcr.io/rhadp/runtime:latest
+      env:
+      - name: JMP_GRPC_ENDPOINT
+        valueFrom:
+          configMapKeyRef:
+            name: jumpstarter-devspaces-config
+            key: JUMPSTARTER_GRPC_ENDPOINT
+
       script: |
         #!/usr/bin/env bash
         set -x
@@ -42,11 +49,12 @@ spec:
         POD_TOKEN_FILE="/var/run/secrets/kubernetes.io/serviceaccount/token"
         POD_TOKEN=$(cat "$POD_TOKEN_FILE")
 
-        CLUSTER_API=$(oc cluster-info | awk '/Kubernetes control plane is running at/{print $NF}')
-        CLUSTER_BASE=${CLUSTER_API#https://api.}
-        CLUSTER_BASE=${CLUSTER_BASE#http://api.}
-        CLUSTER_BASE=${CLUSTER_BASE%%:*}
-        JMP_GRPC_ENDPOINT="grpc.$(params.namespace).apps.${CLUSTER_BASE}"
+        #CLUSTER_API=$(oc cluster-info | awk '/Kubernetes control plane is running at/{print $NF}')
+        #CLUSTER_BASE=${CLUSTER_API#https://api.}
+        #CLUSTER_BASE=${CLUSTER_BASE#http://api.}
+        #CLUSTER_BASE=${CLUSTER_BASE%%:*}
+        #JMP_GRPC_ENDPOINT="grpc.$(params.namespace).apps.${CLUSTER_BASE}"
+        echo "JMP_GRPC_ENDPOINT: $JMP_GRPC_ENDPOINT"
 
         # generate jumpstarter client config
         cat <<-EOF > "$CONFIG_FILE"
@@ -67,6 +75,7 @@ spec:
         EOF
 
         cat ${CONFIG_FILE} > $(results.config.path)
+        echo $JMP_GRPC_ENDPOINT > $(results.grpc-endpoint.path)
   
   workspaces:
     - name: config-dir
