@@ -74,6 +74,16 @@ spec:
         # create the client config
         jmp admin create client $CLIENT_NAME --insecure-tls --unsafe --nointeractive -n $(params.namespace) --oidc-username keycloak:$(params.client-name) --out $CONFIG_FILE
 
+        # create the User Config file
+        cat <<EOF > default.yaml
+        apiVersion: jumpstarter.dev/v1alpha1
+        kind: UserConfig
+        config:
+          current-client: $CLIENT_NAME
+        EOF
+        cp default.yaml config.yaml
+        cat default.yaml
+
         pwd
         ls -la /opt/app-root/.config/jumpstarter
         ls -la /opt/app-root/.config/jumpstarter/clients
