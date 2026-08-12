@@ -1,0 +1,38 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: jmp-release-lease
+spec:
+  description: |
+    Release a lease acquired from Jumpstarter using the provided client name and lease ID.
+  params:
+    - name: client-name
+      type: string
+      description: The client intending to release the lease.
+      default: "default"
+    - name: jmp-lease-id
+      type: string
+      description: "The lease ID to be released"
+  
+  steps:
+    - name: acquire-lease
+      image: 'quay.io/jumpstarter-dev/jumpstarter:latest'      
+      args: ["$(params.exporter-labels[*])"]
+
+      script: |
+        #!/usr/bin/env bash
+        #set -eux
+        set -x
+
+        CONFIG_DIR="/root/.config/jumpstarter/clients"
+
+        # Use the client name provided in the parameter
+        jmp config client use $(params.client-name)-pac
+
+        # Release the lease
+        jmp delete leases $(params.jmp-lease-id)
+  
+  workspaces:
+    - name: config-dir
+      description: Workspace for mounting Jumpstarter client configuration
+      mountPath: /root/.config/jumpstarter/clients
