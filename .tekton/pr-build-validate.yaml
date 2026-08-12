@@ -51,7 +51,7 @@ spec:
       - name: exporter-labels
         type: array
         default:
-          - "device=test-device"
+          - "type=test"
       - name: lease-timeout
         default: "3600"
       - name: lease-duration
