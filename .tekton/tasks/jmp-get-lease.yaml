@@ -40,7 +40,7 @@ spec:
         CONFIG_DIR="/root/.config/jumpstarter/clients"
 
         # Use the client name provided in the parameter
-        jmp config client use $(params.client-name)-pac
+        jmp config client use $(params.client-name)
 
         # Loop through each label provided as argument and build 
         CLIENT_LEASE_CMD="jmp create lease"

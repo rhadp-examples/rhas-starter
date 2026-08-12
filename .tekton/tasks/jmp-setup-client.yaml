@@ -15,6 +15,11 @@ spec:
       description: "The namespace where the Jumpstarter server is running"
       default: "auto-jumpstarter"
 
+  results:
+    - name: jmp-client-name
+      description: "The name of the Jumpstarter client"
+      type: string
+
   steps:
     - name: setup-client
       image: ghcr.io/rhadp/runtime:latest
@@ -73,6 +78,9 @@ spec:
 
         # create the client config
         jmp admin create client $CLIENT_NAME --insecure-tls --unsafe --nointeractive -n $(params.namespace) --oidc-username keycloak:$(params.client-name) --out $CONFIG_FILE
+
+        # output the client name to the results
+        echo "$CLIENT_NAME" > $(results.jmp-client-name.path)
   
   workspaces:
     - name: config-dir

@@ -80,7 +80,7 @@ spec:
           - setup
         params:
           - name: client-name
-            value: $(params.sender)
+            value: $(tasks.setup.results.jmp-client-name)
           - name: exporter-labels
             value: $(params.exporter-labels[*])
           - name: timeout
@@ -111,7 +111,7 @@ spec:
           name: jmp-release-lease
         params:
           - name: client-name
-            value: $(params.sender)
+            value: $(tasks.setup.results.jmp-client-name)
           - name: jmp-lease-id
             value: $(tasks.get-lease.results.jmp-lease-id)
         workspaces:

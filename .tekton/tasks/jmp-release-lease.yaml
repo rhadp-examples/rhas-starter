@@ -27,7 +27,7 @@ spec:
         CONFIG_DIR="/root/.config/jumpstarter/clients"
 
         # Use the client name provided in the parameter
-        jmp config client use $(params.client-name)-pac
+        jmp config client use $(params.client-name)
 
         # Release the lease
         jmp delete leases $(params.jmp-lease-id)
