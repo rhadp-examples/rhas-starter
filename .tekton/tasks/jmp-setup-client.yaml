@@ -44,7 +44,7 @@ spec:
         set -x
         source /venv/bin/activate
 
-        # CLIENT_NAME normalization for used in jumpstarter/kubernetes
+        # normalization for used in jumpstarter/kubernetes
         CLIENT_NAME="$(echo $(params.client-name) | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9-]/-/g; s/-\+/-/g; s/^-//; s/-$//' | cut -c1-63)-pac"
         if oc get client "$CLIENT_NAME" -n $(params.namespace) &>/dev/null; then
           oc delete client "$CLIENT_NAME" -n $(params.namespace) &>/dev/null || true
@@ -61,23 +61,6 @@ spec:
         jmp admin create client $CLIENT_NAME --insecure-tls --unsafe --nointeractive -n $(params.namespace) --oidc-username keycloak:$(params.client-name) &>/dev/null
 
         ls -la $CONFIG_DIR
-
-
-
-
-
-
-
-        # OLD
-        #CONFIG_DIR=$(workspaces.config-dir.path)/.config/jumpstarter/clients
-        #mkdir -p $CONFIG_DIR
-        #CONFIG_FILE="$CONFIG_DIR/$(params.name).yaml"
-
-        #printf '%s\n' "$JMP_CLIENT_CONFIG" > "$CONFIG_FILE"
-
-        # return the config
-        #echo $CONFIG_FILE > $(results.config-path.path)
-        #echo $JMP_GRPC_ENDPOINT > $(results.grpc-endpoint.path)
   
   workspaces:
     - name: config-dir

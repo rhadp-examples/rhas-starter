@@ -39,20 +39,6 @@ spec:
         set -x
 
         CONFIG_DIR="/root/.config/jumpstarter/clients"
-        #CONFIG_FILE="$CONFIG_DIR/$(params.client-name).yaml"
-        #CONFIG_CONTENT_PATH="$(params.client-config)"
-        #CONFIG_CONTENT=$(cat $CONFIG_CONTENT_PATH)
-        
-        # If the client-config parameter is provided, create and use a new client config.
-        #if [ -n "$(params.client-config)" ]; then
-        #  #set +x
-        #fi
-        # Create the config directory if it doesn't exist and write the config content to a file
-        #mkdir -p "$CONFIG_DIR"
-        #echo "$CONFIG_CONTENT" > "$CONFIG_FILE"
-        #  
-        #set -x
-        #fi
 
         # Use the client name provided in the parameter
         echo "Using the client $(params.client-name)-pac"
@@ -60,20 +46,6 @@ spec:
 
         # debugging
         jmp get exporters
-
-
-        # Loop through each label provided as argument and build 
-        #CLIENT_LEASE_CMD="jmp create lease"
-        #for label in "$@"; do
-        #  IFS='=' read -r KEY VAL <<< "$label"
-        #  CLIENT_LEASE_CMD+=" -l $KEY=$VAL"
-        #done
-
-        # Request a lease
-        #JMP_LEASE_ID=$(timeout "$(params.timeout)" $CLIENT_LEASE_CMD --duration "$(params.lease-duration)" -o name) 
-
-        # Output the lease ID to the Tekton results
-        #echo -n "$JMP_LEASE_ID" > $(results.jmp-lease-id.path)
   
   workspaces:
     - name: config-dir
