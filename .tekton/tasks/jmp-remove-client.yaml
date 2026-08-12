@@ -58,7 +58,7 @@ spec:
 
         oc config use-context rhas-pac-ctx
 
-        # normalization for used in jumpstarter/kubernetes
+        # remove the client from the namespace
         if oc get client "$(params.client-name)" -n $(params.namespace) &>/dev/null; then
           oc delete client "$(params.client-name)" -n $(params.namespace) &>/dev/null || true
         fi

@@ -10,9 +10,11 @@ metadata:
     pipelinesascode.tekton.dev/task-3: ".tekton/tasks/jmp-get-lease.yaml"
     pipelinesascode.tekton.dev/task-4: ".tekton/tasks/jmp-release-lease.yaml"
     pipelinesascode.tekton.dev/task-5: ".tekton/tasks/jmp-remove-client.yaml"
+    
     # pipeline events
     pipelinesascode.tekton.dev/on-event: "[push,pull_request]"
     pipelinesascode.tekton.dev/on-target-branch: "[main, release]"
+    
     #pipelinesascode.tekton.dev/on-path-changed: "[src/**]"
     pipelinesascode.tekton.dev/cancel-in-progress: "true"
 spec:
@@ -40,7 +42,7 @@ spec:
       - name: repo_url
       - name: revision
       - name: sender
-      
+
       # jumpstarter client config
       - name: namespace
         default: auto-jumpstarter
@@ -54,12 +56,11 @@ spec:
         default: "3600"
       - name: lease-duration
         default: "00:20:00"
-    
+
     workspaces:
       - name: shared-workspace
-    
-    tasks:
 
+    tasks:
       - name: setup
         taskRef:
           name: jmp-setup-client
@@ -88,24 +89,11 @@ spec:
             value: $(params.lease-timeout)
           - name: lease-duration
             value: $(params.lease-duration)
-          
+
         workspaces:
           - name: config-dir
             workspace: shared-workspace
 
-      #- name: debug
-      #  taskRef:
-      #    name: bash
-      #  runAfter:
-      #    - setup
-      #  params:
-      #    - name: cmd
-      #      value: "pwd && ls -la && ls -la $HOME && echo $HOME"
-      #  workspaces:
-      #    - name: source
-      #      workspace: shared-workspace
-      #    #- name: config-dir
-      #    #  workspace: shared-workspace
     finally:
       - name: release-lease
         taskRef:
@@ -121,6 +109,8 @@ spec:
       - name: remove-client
         taskRef:
           name: jmp-remove-client
+        runAfter:
+          - release-lease
         params:
           - name: client-name
             value: $(tasks.setup.results.jmp-client-name)
