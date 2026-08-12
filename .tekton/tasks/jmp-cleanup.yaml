@@ -29,6 +29,7 @@ spec:
         source /venv/bin/activate
 
         pwd
+        
         ls -la /opt/app-root/.config/jumpstarter
         ls -la /opt/app-root/.config/jumpstarter/clients
 
