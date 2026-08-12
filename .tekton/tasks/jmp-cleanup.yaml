@@ -21,14 +21,12 @@ spec:
 
   steps:
     - name: setup-client
-      image: ghcr.io/rhadp/runtime:latest
+      image: ghcr.io/rhadp/pipeline:latest
 
       script: |
         #!/usr/bin/env bash
         set -x
         source /venv/bin/activate
-        cd /root
-        export HOME=/root
 
         # Extract the values from the service account
         POD_TOKEN_FILE="/var/run/secrets/kubernetes.io/serviceaccount/token"
@@ -53,7 +51,7 @@ spec:
 
         oc config use-context rhas-pac-ctx
 
-        CONFIG_DIR="/root/.config/jumpstarter/clients"
+        CONFIG_DIR="/opt/app-root/.config/jumpstarter/clients"
         ls -la $CONFIG_DIR
 
         # Use the client name provided in the parameter
@@ -72,4 +70,4 @@ spec:
   workspaces:
     - name: config-dir
       description: Workspace for mounting Jumpstarter client configuration
-      mountPath: /root/.config/jumpstarter/clients
+      mountPath: /opt/app-root/.config/jumpstarter/clients

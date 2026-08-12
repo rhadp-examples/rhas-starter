@@ -29,15 +29,15 @@ spec:
   
   steps:
     - name: acquire-lease
-      image: 'quay.io/jumpstarter-dev/jumpstarter:latest'      
+      image: ghcr.io/rhadp/pipeline:latest
       args: ["$(params.exporter-labels[*])"]
 
       script: |
         #!/usr/bin/env bash
-        #set -eux
         set -x
+        source /venv/bin/activate
 
-        CONFIG_DIR="/root/.config/jumpstarter/clients"
+        CONFIG_DIR="/opt/app-root/.config/jumpstarter/clients"
 
         # Use the client name provided in the parameter
         jmp config client use $(params.client-name)
@@ -58,4 +58,4 @@ spec:
   workspaces:
     - name: config-dir
       description: Workspace for mounting Jumpstarter client configuration
-      mountPath: /root/.config/jumpstarter/clients
+      mountPath: /opt/app-root/.config/jumpstarter/clients
