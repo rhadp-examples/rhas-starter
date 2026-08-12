@@ -52,6 +52,7 @@ spec:
         oc config use-context rhas-pac-ctx
 
         CONFIG_DIR="/root/.config/jumpstarter/clients"
+        ls -la $CONFIG_DIR
 
         # Use the client name provided in the parameter
         jmp config client use $(params.client-name)
