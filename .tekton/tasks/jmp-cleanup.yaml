@@ -25,7 +25,7 @@ spec:
 
       script: |
         #!/usr/bin/env bash
-        set -eux
+        set +eux
         source /venv/bin/activate
 
         # Extract the values from the service account
@@ -53,7 +53,7 @@ spec:
 
         CONFIG_DIR="/opt/app-root/.config/jumpstarter/clients"
 
-        set +x
+        set -x
 
         # Use the client name provided in the parameter
         jmp config client use $(params.client-name)
