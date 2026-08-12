@@ -44,10 +44,10 @@ spec:
         default: auto-jumpstarter
       - name: name
         default: rhas-starter
-      - name: insecure-tls
-        default: "true"
-      - name: tls-ca
-        default: ""
+      #- name: insecure-tls
+      #  default: "true"
+      #- name: tls-ca
+      #  default: ""
       - name: exporter-labels
         type: array
         default:
