@@ -44,6 +44,29 @@ spec:
         set -x
         source /venv/bin/activate
 
+        # Extract the values from the service account
+        POD_TOKEN_FILE="/var/run/secrets/kubernetes.io/serviceaccount/token"
+        POD_TOKEN=$(cat "$POD_TOKEN_FILE")
+        NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
+        API_SERVER=$(oc whoami --show-server)
+
+        # set ./kube correctly
+        mkdir -p ~/.kube
+
+        oc config set-cluster rhas \
+          --server=$API_SERVER \
+          --certificate-authority=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+
+        oc config set-credentials rhas-pac \
+          --token=$POD_TOKEN
+
+        oc config set-context rhas-pac-ctx \
+          --cluster=rhas \
+          --user=rhas-pac \
+          --namespace=$NAMESPACE
+
+        oc config use-context rhas-pac-ctx
+
         # normalization for used in jumpstarter/kubernetes
         CLIENT_NAME="$(echo $(params.client-name) | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9-]/-/g; s/-\+/-/g; s/^-//; s/-$//' | cut -c1-63)-pac"
         if oc get client "$CLIENT_NAME" -n $(params.namespace) &>/dev/null; then
