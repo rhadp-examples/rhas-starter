@@ -108,7 +108,7 @@ spec:
     finally:
       - name: release-lease
         taskRef:
-          name: bash
+          name: jmp-release-lease
         params:
           - name: client-name
             value: $(params.sender)
