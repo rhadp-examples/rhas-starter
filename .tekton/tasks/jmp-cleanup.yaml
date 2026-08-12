@@ -28,6 +28,10 @@ spec:
         set -x
         source /venv/bin/activate
 
+        pwd
+        ls -la /opt/app-root/.config/jumpstarter
+        ls -la /opt/app-root/.config/jumpstarter/clients
+
         # Extract the values from the service account
         POD_TOKEN_FILE="/var/run/secrets/kubernetes.io/serviceaccount/token"
         POD_TOKEN=$(cat "$POD_TOKEN_FILE")
@@ -52,6 +56,7 @@ spec:
         oc config use-context rhas-pac-ctx
 
         CONFIG_DIR="/opt/app-root/.config/jumpstarter/clients"
+
         pwd
         ls -la
         echo $CONFIG_DIR
@@ -73,4 +78,4 @@ spec:
   workspaces:
     - name: config-dir
       description: Workspace for mounting Jumpstarter client configuration
-      mountPath: /opt/app-root/.config/jumpstarter/clients
+      mountPath: /opt/app-root/.config/jumpstarter
