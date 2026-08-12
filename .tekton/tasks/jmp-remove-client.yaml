@@ -1,0 +1,69 @@
+kind: Task
+apiVersion: tekton.dev/v1beta1
+metadata:
+  name: jmp-remove-client
+spec:
+  description: |
+    Remove a Jumpstarter client from the namespace
+  params:
+    - name: client-name
+      type: string
+      description: The client intending to acquire the lease.
+      default: "default"
+    - name: namespace
+      type: string
+      description: "The namespace where the Jumpstarter server is running"
+      default: "auto-jumpstarter"
+
+  steps:
+    - name: setup-client
+      image: ghcr.io/rhadp/runtime:latest
+      env:
+      - name: JMP_GRPC_ENDPOINT
+        valueFrom:
+          configMapKeyRef:
+            name: jumpstarter-devspaces-config
+            key: JUMPSTARTER_GRPC_ENDPOINT
+      - name: JMP_CLIENT_CONFIG
+        valueFrom:
+          secretKeyRef:
+            name: rhas-client-config
+            key: jmp.config
+
+      script: |
+        #!/usr/bin/env bash
+        set -x
+        source /venv/bin/activate
+
+        # Extract the values from the service account
+        POD_TOKEN_FILE="/var/run/secrets/kubernetes.io/serviceaccount/token"
+        POD_TOKEN=$(cat "$POD_TOKEN_FILE")
+        NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
+        API_SERVER=$(oc whoami --show-server)
+
+        # set ./kube correctly
+        mkdir -p ~/.kube
+
+        oc config set-cluster rhas \
+          --server=$API_SERVER \
+          --certificate-authority=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+
+        oc config set-credentials rhas-pac \
+          --token=$POD_TOKEN
+
+        oc config set-context rhas-pac-ctx \
+          --cluster=rhas \
+          --user=rhas-pac \
+          --namespace=$NAMESPACE
+
+        oc config use-context rhas-pac-ctx
+
+        # normalization for used in jumpstarter/kubernetes
+        if oc get client "$(params.client-name)" -n $(params.namespace) &>/dev/null; then
+          oc delete client "$(params.client-name)" -n $(params.namespace) &>/dev/null || true
+        fi
+
+  workspaces:
+    - name: config-dir
+      description: Workspace for mounting Jumpstarter client configuration
+      mountPath: /root/.config/jumpstarter/clients
