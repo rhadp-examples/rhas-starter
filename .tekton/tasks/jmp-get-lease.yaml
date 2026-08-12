@@ -38,6 +38,7 @@ spec:
         set -x
 
         echo $HOME
+        pwd
 
         CONFIG_DIR="/root/.config/jumpstarter/clients"
 
