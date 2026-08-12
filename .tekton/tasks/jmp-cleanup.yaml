@@ -52,6 +52,9 @@ spec:
         oc config use-context rhas-pac-ctx
 
         CONFIG_DIR="/opt/app-root/.config/jumpstarter/clients"
+        pwd
+        ls -la
+        echo $CONFIG_DIR
         ls -la $CONFIG_DIR
 
         # Use the client name provided in the parameter
