@@ -28,6 +28,8 @@ spec:
         set -x
         source /venv/bin/activate
 
+        echo $HOME
+
         # Extract the values from the service account
         POD_TOKEN_FILE="/var/run/secrets/kubernetes.io/serviceaccount/token"
         POD_TOKEN=$(cat "$POD_TOKEN_FILE")

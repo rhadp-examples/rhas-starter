@@ -37,6 +37,8 @@ spec:
         #set -eux
         set -x
 
+        echo $HOME
+
         CONFIG_DIR="/root/.config/jumpstarter/clients"
 
         # Use the client name provided in the parameter
