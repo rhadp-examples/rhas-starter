@@ -7,20 +7,22 @@ spec:
     Create Jumpstarter client config from the user system account in Kubernetes,
     this requires that Jumpstarter is configured to trust authentication from K8s
   params:
+    - default: 'default'
+      description: The client intending to acquire the lease.
+      name: client-name
+      type: string
     - name: namespace
       description: "The namespace where the Jumpstarter server is running"
       type: string
-    - name: name
-      description: "The Jumpstarter client name"
-      type: string
-
-  results:
-    - name: grpc-endpoint
-      description: "The Jumpstarter grpc endpoint"
-      type: string
-    - name: config-path
-      description: "Path to the generated Jumpstarter client config file"
-      type: string
+      default: "auto-jumpstarter"
+    
+  #results:
+  #  - name: grpc-endpoint
+  #    description: "The Jumpstarter grpc endpoint"
+  #    type: string
+  #  - name: config-path
+  #    description: "Path to the generated Jumpstarter client config file"
+  #    type: string
 
   steps:
     - name: setup-client
@@ -42,17 +44,42 @@ spec:
         set -x
         source /venv/bin/activate
 
-        # setup the jmp infrastructure
-        CONFIG_DIR=$(workspaces.config-dir.path)/.config/jumpstarter/clients
-        mkdir -p $CONFIG_DIR
-        CONFIG_FILE="$CONFIG_DIR/$(params.name).yaml"
+        # CLIENT_NAME normalization for used in jumpstarter/kubernetes
+        CLIENT_NAME="$(echo $(params.client-name) | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9-]/-/g; s/-\+/-/g; s/^-//; s/-$//' | cut -c1-63)-pac"
+        if oc get client "$CLIENT_NAME" -n $(params.namespace) &>/dev/null; then
+          oc delete client "$CLIENT_NAME" -n $(params.namespace) &>/dev/null || true
+        fi
 
-        printf '%s\n' "$JMP_CLIENT_CONFIG" > "$CONFIG_FILE"
+        # setup the jmp infrastructure
+        CONFIG_DIR="/root/.config/jumpstarter/clients"
+        CONFIG_FILE="$CONFIG_DIR/$CLIENT_NAME.yaml"
+
+        # Create the config directory if it doesn't exist and write the config content to a file
+        mkdir -p "$CONFIG_DIR"
+
+        # create the client config
+        jmp admin create client $CLIENT_NAME --insecure-tls --unsafe --nointeractive -n $(params.namespace) --oidc-username keycloak:$(params.client-name) &>/dev/null
+
+        ls -la $CONFIG_DIR
+
+
+
+
+
+
+
+        # OLD
+        #CONFIG_DIR=$(workspaces.config-dir.path)/.config/jumpstarter/clients
+        #mkdir -p $CONFIG_DIR
+        #CONFIG_FILE="$CONFIG_DIR/$(params.name).yaml"
+
+        #printf '%s\n' "$JMP_CLIENT_CONFIG" > "$CONFIG_FILE"
 
         # return the config
-        echo $CONFIG_FILE > $(results.config-path.path)
-        echo $JMP_GRPC_ENDPOINT > $(results.grpc-endpoint.path)
+        #echo $CONFIG_FILE > $(results.config-path.path)
+        #echo $JMP_GRPC_ENDPOINT > $(results.grpc-endpoint.path)
   
   workspaces:
     - name: config-dir
-      description: The workspace which contains Jumpstarter client config file
+      description: Workspace for mounting Jumpstarter client configuration
+      mountPath: /root/.config/jumpstarter/clients

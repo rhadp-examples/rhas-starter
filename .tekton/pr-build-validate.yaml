@@ -67,10 +67,10 @@ spec:
         #runAfter:
         #  - clone-repo
         params:
+          - name: client-name
+            value: $(params.sender)
           - name: namespace
             value: $(params.namespace)
-          - name: name
-            value: $(params.sender)
         workspaces:
           - name: config-dir
             workspace: shared-workspace
@@ -94,8 +94,6 @@ spec:
           
         workspaces:
           - name: config-dir
-            workspace: shared-workspace
-          - name: jumpstarter-client-secret
             workspace: shared-workspace
 
       #- name: debug
