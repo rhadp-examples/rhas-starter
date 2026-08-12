@@ -58,7 +58,7 @@ spec:
         mkdir -p "$CONFIG_DIR"
 
         # create the client config
-        jmp admin create client $CLIENT_NAME --insecure-tls --unsafe --nointeractive -n $(params.namespace) --oidc-username keycloak:$(params.client-name) -out $CONFIG_FILE
+        jmp admin create client $CLIENT_NAME --insecure-tls --unsafe --nointeractive -n $(params.namespace) --oidc-username keycloak:$(params.client-name) --out $CONFIG_FILE
 
         ls -la $CONFIG_DIR
   
