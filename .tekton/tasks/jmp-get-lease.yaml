@@ -40,7 +40,6 @@ spec:
         CONFIG_DIR="/root/.config/jumpstarter/clients"
 
         # Use the client name provided in the parameter
-        echo "Using the client $(params.client-name)-pac"
         jmp config client use $(params.client-name)-pac
 
         # Loop through each label provided as argument and build 
