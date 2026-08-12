@@ -106,16 +106,18 @@ spec:
       #    #- name: config-dir
       #    #  workspace: shared-workspace
     finally:
-      - name: release
+      - name: release-lease
         taskRef:
           name: bash
         params:
-          - name: cmd
-            value: "pwd && ls -la"
+          - name: client-name
+            value: $(params.sender)
+          - name: jmp-lease-id
+            value: $(tasks.get-lease.results.jmp-lease-id)
         workspaces:
-          - name: source
+          - name: config-dir
             workspace: shared-workspace
-            
+
   workspaces:
     - name: shared-workspace
       volumeClaimTemplate:
