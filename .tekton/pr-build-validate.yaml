@@ -34,9 +34,11 @@ spec:
 
   pipelineSpec:
     params:
+      # git repository (PAC template vars)
       - name: repo_url
       - name: revision
       - name: sender
+      
       # jumpstarter client config
       - name: namespace
         default: auto-jumpstarter
@@ -83,8 +85,6 @@ spec:
         params:
           - name: client-name
             value: $(params.sender)
-          - name: client-config
-            value: $(tasks.setup.results.config-path)
           - name: exporter-labels
             value: $(params.exporter-labels[*])
           - name: timeout

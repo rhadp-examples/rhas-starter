@@ -7,10 +7,10 @@ spec:
     Create Jumpstarter client config from the user system account in Kubernetes,
     this requires that Jumpstarter is configured to trust authentication from K8s
   params:
-    - default: 'default'
-      description: The client intending to acquire the lease.
-      name: client-name
+    - name: client-name
       type: string
+      description: The client intending to acquire the lease.
+      default: "default"
     - name: namespace
       description: "The namespace where the Jumpstarter server is running"
       type: string

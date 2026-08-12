@@ -6,14 +6,10 @@ spec:
   description: |
     Acquire a lease from Jumpstarter using the provided client config.
   params:
-    - default: 'default'
+    - name: client-name
+      type: string
       description: The client intending to acquire the lease.
-      name: client-name
-      type: string
-    - name: 'client-config'
-      description: Path to the Jumpstarter client config file.
-      type: string
-      default: ''
+      default: "default"
     - description: A list of label exporters in the format key=value.
       name: exporter-labels
       type: array
