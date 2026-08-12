@@ -29,11 +29,6 @@ spec:
           configMapKeyRef:
             name: jumpstarter-devspaces-config
             key: JUMPSTARTER_GRPC_ENDPOINT
-      - name: JMP_CLIENT_CONFIG
-        valueFrom:
-          secretKeyRef:
-            name: rhas-client-config
-            key: jmp.config
 
       script: |
         #!/usr/bin/env bash

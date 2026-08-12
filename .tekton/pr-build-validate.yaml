@@ -89,7 +89,6 @@ spec:
             value: $(params.lease-timeout)
           - name: lease-duration
             value: $(params.lease-duration)
-
         workspaces:
           - name: config-dir
             workspace: shared-workspace
