@@ -1,7 +1,7 @@
 kind: Task
 apiVersion: tekton.dev/v1beta1
 metadata:
-  name: jmp-remove-client
+  name: jmp-cleanup
 spec:
   description: |
     Remove a Jumpstarter client from the namespace
@@ -10,6 +10,10 @@ spec:
       type: string
       description: The client intending to acquire the lease.
       default: "default"
+    - name: jmp-lease-id
+      type: string
+      description: "The lease ID to be released. Does nothing if not provided"
+      default: ""
     - name: namespace
       type: string
       description: "The namespace where the Jumpstarter server is running"
@@ -57,6 +61,16 @@ spec:
           --namespace=$NAMESPACE
 
         oc config use-context rhas-pac-ctx
+
+        CONFIG_DIR="/root/.config/jumpstarter/clients"
+
+        # Use the client name provided in the parameter
+        jmp config client use $(params.client-name)
+
+        # remove the lease if provided
+        if [ -n "$(params.jmp-lease-id)" ]; then
+          jmp delete leases $(params.jmp-lease-id)
+        fi
 
         # remove the client from the namespace
         if oc get client "$(params.client-name)" -n $(params.namespace) &>/dev/null; then

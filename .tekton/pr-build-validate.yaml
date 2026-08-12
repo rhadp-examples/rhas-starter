@@ -9,7 +9,7 @@ metadata:
     pipelinesascode.tekton.dev/task-2: ".tekton/tasks/jmp-setup-client.yaml"
     pipelinesascode.tekton.dev/task-3: ".tekton/tasks/jmp-get-lease.yaml"
     pipelinesascode.tekton.dev/task-4: ".tekton/tasks/jmp-release-lease.yaml"
-    pipelinesascode.tekton.dev/task-5: ".tekton/tasks/jmp-remove-client.yaml"
+    pipelinesascode.tekton.dev/task-5: ".tekton/tasks/jmp-cleanup.yaml"
     
     # pipeline events
     pipelinesascode.tekton.dev/on-event: "[push,pull_request]"
@@ -95,31 +95,20 @@ spec:
             workspace: shared-workspace
 
     finally:
-      - name: release-lease
+      - name: cleanup
         taskRef:
-          name: jmp-release-lease
+          name: jmp-cleanup
         params:
           - name: client-name
             value: $(tasks.setup.results.jmp-client-name)
           - name: jmp-lease-id
             value: $(tasks.get-lease.results.jmp-lease-id)
-        workspaces:
-          - name: config-dir
-            workspace: shared-workspace
-      - name: remove-client
-        taskRef:
-          name: jmp-remove-client
-        runAfter:
-          - release-lease
-        params:
-          - name: client-name
-            value: $(tasks.setup.results.jmp-client-name)
           - name: namespace
             value: $(params.namespace)
         workspaces:
           - name: config-dir
             workspace: shared-workspace
-
+    
   workspaces:
     - name: shared-workspace
       volumeClaimTemplate:
