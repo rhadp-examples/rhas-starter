@@ -39,6 +39,11 @@ spec:
 
         CONFIG_DIR="/opt/app-root/.config/jumpstarter/clients"
 
+        pwd
+        ls -la
+        echo $CONFIG_DIR
+        ls -la $CONFIG_DIR
+
         # Use the client name provided in the parameter
         jmp config client use $(params.client-name)
 
@@ -58,4 +63,4 @@ spec:
   workspaces:
     - name: config-dir
       description: Workspace for mounting Jumpstarter client configuration
-      mountPath: /opt/app-root/.config/jumpstarter/clients
+      mountPath: /opt/app-root/.config/jumpstarter

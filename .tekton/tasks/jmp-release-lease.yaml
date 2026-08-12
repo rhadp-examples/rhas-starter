@@ -35,4 +35,4 @@ spec:
   workspaces:
     - name: config-dir
       description: Workspace for mounting Jumpstarter client configuration
-      mountPath: /opt/app-root/.config/jumpstarter/clients
+      mountPath: /opt/app-root/.config/jumpstarter
