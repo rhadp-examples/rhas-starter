@@ -74,10 +74,14 @@ spec:
         # create the client config
         jmp admin create client $CLIENT_NAME --insecure-tls --unsafe --nointeractive -n $(params.namespace) --oidc-username keycloak:$(params.client-name) --out $CONFIG_FILE
 
+        pwd
+        ls -la /opt/app-root/.config/jumpstarter
+        ls -la /opt/app-root/.config/jumpstarter/clients
+
         # output the client name to the results
         echo "$CLIENT_NAME" > $(results.jmp-client-name.path)
   
   workspaces:
     - name: config-dir
       description: Workspace for mounting Jumpstarter client configuration
-      mountPath: /opt/app-root/.config/jumpstarter/clients
+      mountPath: /opt/app-root/.config/jumpstarter

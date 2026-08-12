@@ -74,39 +74,6 @@ spec:
         workspaces:
           - name: config-dir
             workspace: shared-workspace
-
-      - name: get-lease
-        taskRef:
-          name: jmp-get-lease
-        runAfter:
-          - setup
-        params:
-          - name: client-name
-            value: $(tasks.setup.results.jmp-client-name)
-          - name: exporter-labels
-            value: $(params.exporter-labels[*])
-          - name: timeout
-            value: $(params.lease-timeout)
-          - name: lease-duration
-            value: $(params.lease-duration)
-        workspaces:
-          - name: config-dir
-            workspace: shared-workspace
-
-    finally:
-      - name: cleanup
-        taskRef:
-          name: jmp-cleanup
-        params:
-          - name: client-name
-            value: $(tasks.setup.results.jmp-client-name)
-          - name: jmp-lease-id
-            value: $(tasks.get-lease.results.jmp-lease-id)
-          - name: namespace
-            value: $(params.namespace)
-        workspaces:
-          - name: config-dir
-            workspace: shared-workspace
     
   workspaces:
     - name: shared-workspace
