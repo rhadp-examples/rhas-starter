@@ -71,7 +71,7 @@ spec:
           - name: namespace
             value: $(params.namespace)
         workspaces:
-          - name: config-dir
+          - name: source
             workspace: shared-workspace
 
       - name: get-lease
@@ -89,7 +89,7 @@ spec:
           - name: lease-duration
             value: $(params.lease-duration)
         workspaces:
-          - name: config-dir
+          - name: source
             workspace: shared-workspace
 
     finally:
@@ -104,7 +104,7 @@ spec:
           - name: namespace
             value: $(params.namespace)
         workspaces:
-          - name: config-dir
+          - name: source
             workspace: shared-workspace
 
   workspaces:
