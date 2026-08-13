@@ -37,6 +37,11 @@ spec:
         set -x
         source /venv/bin/activate
 
+        echo "PWD" && pwd
+        echo "/workspace ->" && ls -la /workspace
+        echo "/opt/app-root/.config/jumpstarter ->" && ls -la /opt/app-root/.config/jumpstarter
+
+
         CONFIG_DIR="/opt/app-root/.config/jumpstarter/clients"
 
         # Use the client name provided in the parameter

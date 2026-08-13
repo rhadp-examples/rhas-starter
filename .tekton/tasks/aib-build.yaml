@@ -19,10 +19,10 @@ spec:
 
         source /venv/bin/activate
 
-        cd /workspace/source
-
-        echo "Executing bash command: '$(params.cmd)'"
-        eval "$(params.cmd)"
+        echo "PWD" && pwd
+        echo "/workspace ->" && ls -la /workspace
+        echo "/workspace/source ->" && ls -la /workspace/source
+        echo "/opt/app-root/.config/jumpstarter ->" && ls -la /opt/app-root/.config/jumpstarter
 
   workspaces:
     - name: source
