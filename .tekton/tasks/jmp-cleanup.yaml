@@ -4,7 +4,7 @@ metadata:
   name: jmp-cleanup
 spec:
   description: |
-    Remove a Jumpstarter client from the namespace
+    Cleanup after using Jumpstarter.
   params:
     - name: client-name
       type: string

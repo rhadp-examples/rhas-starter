@@ -10,8 +10,9 @@ metadata:
     pipelinesascode.tekton.dev/task-3: ".tekton/tasks/jmp-get-lease.yaml"
     pipelinesascode.tekton.dev/task-4: ".tekton/tasks/jmp-release-lease.yaml"
     pipelinesascode.tekton.dev/task-5: ".tekton/tasks/jmp-cleanup.yaml"
-    pipelinesascode.tekton.dev/task-6: ".tekton/tasks/aib-build.yaml"
-    
+    pipelinesascode.tekton.dev/task-6: ".tekton/tasks/aib-build-dev.yaml"
+    pipelinesascode.tekton.dev/task-7: ".tekton/tasks/aib-cmd.yaml"
+
     # pipeline events
     pipelinesascode.tekton.dev/on-event: "[push,pull_request]"
     pipelinesascode.tekton.dev/on-target-branch: "[main, release]"
@@ -90,14 +91,26 @@ spec:
 
       - name: build
         taskRef:
-          name: aib-build
+          name: aib-cmd
         runAfter:
           - clone-repo
         params:
           - name: client-name
             value: $(tasks.setup.results.jmp-client-name)
-          - name: cmd
-            value: "image build-dev manifests/minimal.aib.yml --target qemu --internal-registry --arch arm64 --mode image --format qcow2 -o ./images/minimal.qcow2"
+          - name: run-id
+            value: $(context.pipelineRun.name)
+          - name: manifest
+            value: "manifests/minimal.aib.yml"
+          - name: target
+            value: "qemu"
+          - name: architecture
+            value: "arm64"
+          - name: mode
+            value: "image"
+          - name: format
+            value: "qcow2"
+          - name: extra-args
+            value: "-o ./images/minimal.qcow2"
         workspaces:
           - name: source
             workspace: shared-workspace

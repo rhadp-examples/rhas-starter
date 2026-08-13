@@ -4,7 +4,7 @@ metadata:
   name: jmp-setup-client
 spec:
   description: |
-    Create Jumpstarter client config from the user name provided in the parameters
+    Create Jumpstarter client config from the user name provided in the parameters.
   params:
     - name: client-name
       type: string

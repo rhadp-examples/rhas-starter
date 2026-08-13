@@ -1,10 +1,10 @@
 kind: Task
 apiVersion: tekton.dev/v1beta1
 metadata:
-  name: aib-build
+  name: aib-cmd
 spec:
   description: |
-     Exceute bash commands in a container with the tools needed for RHAS development.
+     Exceute caib commands.
   params:
     - name: client-name
       type: string
@@ -37,10 +37,7 @@ spec:
         # Use the client name provided in the parameter
         jmp config client use $CLIENT_NAME
 
-        cd /workspace/source
-        ls -la
-
-        echo "Run caib $(params.cmd)"
+        echo "caib $(params.cmd)"
         caib $(params.cmd)
 
   workspaces:

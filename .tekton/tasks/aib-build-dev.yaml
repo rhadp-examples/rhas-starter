@@ -1,0 +1,71 @@
+kind: Task
+apiVersion: tekton.dev/v1beta1
+metadata:
+  name: aib-build-dev
+spec:
+  description: |
+     Build a disk image using ostree or package-based mode for development workflows.
+  params:
+    - name: client-name
+      type: string
+      description: "The jumpstarter client config."
+      default: "default"
+    - name: run-id
+      type: string
+      description: "The pipeline run ID"
+    - name: manifest
+      type: string
+      description: "The manifest.aib.yml to build."
+    - name: target
+      type: string
+      description: "Target platform"
+      default: "qemu"
+    - name: architecture
+      type: string
+      description: "Architecture (amd64, arm64)"
+      default: "arm64"
+    - name: mode
+      type: string
+      description: "Build mode: image (ostree) or package (package-based)"
+      default: "image"
+    - name: format
+      type: string
+      description: "Export format: qcow2, raw, simg, etc"
+      default: "qcow2"
+    - name: extra-args
+      description: "Additional args to add to the build parameters"
+      type: string
+
+  steps:
+    - name: build
+      image: ghcr.io/rhadp/builder:latest
+      script: |
+        #!/usr/bin/env bash
+        set -x
+
+        source /venv/bin/activate
+
+        # Extract the values from the service account and params
+        NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
+        CLIENT_NAME=$(echo "$(params.client-name)" | tr -d '[:space:]')
+
+        # create the config loaction if it does not already exist
+        CONFIG_DIR="/opt/app-root/.config/jumpstarter/clients"
+        mkdir -p $CONFIG_DIR
+
+        # write the jumpstarter config to the expected location
+        echo "$(oc -n $NAMESPACE get secret $CLIENT_NAME -o jsonpath='{.data.config}' | base64 -d)" > "$CONFIG_DIR/$CLIENT_NAME.yaml"
+
+        # Use the client name provided in the parameter
+        jmp config client use $CLIENT_NAME
+
+        BUILD_PARAMS="image build-dev $(params.manifest) -n $(params.run-id) -internal-registry --target $(params.target) --arch $(params.architecture) --mode $(params.mode) --format $(params.format) $(params.extra-args)"
+        echo "aib $BUILD_PARAMS"
+        caib $BUILD_PARAMS
+
+  workspaces:
+    - name: source
+      description: The workspace where the source code is located
+
+
+#-o ./images/minimal.qcow2
