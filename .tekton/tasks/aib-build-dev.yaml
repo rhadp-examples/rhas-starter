@@ -59,7 +59,7 @@ spec:
         # Use the client name provided in the parameter
         jmp config client use $CLIENT_NAME
 
-        BUILD_PARAMS="image build-dev $(params.manifest) -n $(params.run-id) -internal-registry --target $(params.target) --arch $(params.architecture) --mode $(params.mode) --format $(params.format) $(params.extra-args)"
+        BUILD_PARAMS="image build-dev $(params.manifest) -n $(params.run-id) --internal-registry --target $(params.target) --arch $(params.architecture) --mode $(params.mode) --format $(params.format) $(params.extra-args)"
         echo "aib $BUILD_PARAMS"
         caib $BUILD_PARAMS
 
