@@ -97,7 +97,7 @@ spec:
           - name: client-name
             value: $(tasks.setup.results.jmp-client-name)
           - name: cmd
-            value: "build-dev manifests/minimal.aib.yml --target qemu --internal-registry --arch arm64 --mode image --format qcow2 -o ./images/minimal.qcow2"
+            value: "image build-dev manifests/minimal.aib.yml --target qemu --internal-registry --arch arm64 --mode image --format qcow2 -o ./images/minimal.qcow2"
         workspaces:
           - name: source
             workspace: shared-workspace
