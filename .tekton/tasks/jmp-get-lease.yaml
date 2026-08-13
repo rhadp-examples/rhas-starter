@@ -49,7 +49,7 @@ spec:
         echo "$(oc -n $NAMESPACE get secret $CLIENT_NAME -o jsonpath='{.data.config}' | base64 -d)" > "$CONFIG_DIR/$CLIENT_NAME.yaml"
 
         # Use the client name provided in the parameter
-        jmp config client use $(params.client-name)
+        jmp config client use $CLIENT_NAME
 
         # Loop through each label provided as argument and build 
         CLIENT_LEASE_CMD="jmp create lease"

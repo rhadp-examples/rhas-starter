@@ -28,7 +28,8 @@ spec:
         set +eux
         source /venv/bin/activate
 
-        # Extract the values from the service account
+
+        # Setup .kube correctly. Extract the values from the service account
         POD_TOKEN_FILE="/var/run/secrets/kubernetes.io/serviceaccount/token"
         POD_TOKEN=$(cat "$POD_TOKEN_FILE")
         NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
@@ -51,12 +52,18 @@ spec:
 
         oc config use-context rhas-pac-ctx
 
-        CONFIG_DIR="/opt/app-root/.config/jumpstarter/clients"
+        # Extract the values from the params
+        CLIENT_NAME=$(echo "$(params.client-name)" | tr -d '[:space:]')
 
-        set -x
+        # create the config loaction if it does not already exist
+        CONFIG_DIR="/opt/app-root/.config/jumpstarter/clients"
+        mkdir -p $CONFIG_DIR
+
+        # write the jumpstarter config to the expected location
+        echo "$(oc -n $NAMESPACE get secret $CLIENT_NAME -o jsonpath='{.data.config}' | base64 -d)" > "$CONFIG_DIR/$CLIENT_NAME.yaml"
 
         # Use the client name provided in the parameter
-        jmp config client use $(params.client-name)
+        jmp config client use $CLIENT_NAME
 
         # remove the lease if provided
         if [ -n "$(params.jmp-lease-id)" ]; then
@@ -70,7 +77,7 @@ spec:
 
         # remove the secret with the jumpstarter config
         if oc get secret $CLIENT_NAME -n $NAMESPACE &>/dev/null; then
-          # oc -n $NAMESPACE delete secret $CLIENT_NAME
+          oc -n $NAMESPACE delete secret $CLIENT_NAME
         fi
 
   workspaces:

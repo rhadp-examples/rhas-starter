@@ -35,7 +35,7 @@ spec:
         set +eux
         source /venv/bin/activate
 
-        # Extract the values from the service account
+        # Setup .kube correctly. Extract the values from the service account
         POD_TOKEN_FILE="/var/run/secrets/kubernetes.io/serviceaccount/token"
         POD_TOKEN=$(cat "$POD_TOKEN_FILE")
         NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
