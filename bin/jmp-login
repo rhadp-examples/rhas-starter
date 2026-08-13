@@ -49,8 +49,3 @@ jmp login --nointeractive --insecure-tls --unsafe $CLIENT_NAME@$JUMPSTARTER_LOGI
 
 # create the caib client config
 bin/caib login $CAIB_SERVER
-
-# create the rhas client config
-oc -n $USER_NAMESPACE create secret generic rhas-client-config \
-  --from-literal jmp.config="$(cat $JMP_CONFIG_FILE)" \
-  --from-literal caib.config="$(cat $CAIB_CONFIG_FILE)"
