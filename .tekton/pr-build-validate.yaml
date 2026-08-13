@@ -91,7 +91,7 @@ spec:
 
       - name: build
         taskRef:
-          name: aib-cmd
+          name: aib-build-dev
         runAfter:
           - clone-repo
         params:
