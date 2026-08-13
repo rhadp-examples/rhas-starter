@@ -10,6 +10,7 @@ metadata:
     pipelinesascode.tekton.dev/task-3: ".tekton/tasks/jmp-get-lease.yaml"
     pipelinesascode.tekton.dev/task-4: ".tekton/tasks/jmp-release-lease.yaml"
     pipelinesascode.tekton.dev/task-5: ".tekton/tasks/jmp-cleanup.yaml"
+    pipelinesascode.tekton.dev/task-6: ".tekton/tasks/aib-build.yaml"
     
     # pipeline events
     pipelinesascode.tekton.dev/on-event: "[push,pull_request]"
@@ -64,8 +65,6 @@ spec:
       - name: setup
         taskRef:
           name: jmp-setup-client
-        #runAfter:
-        #  - clone-repo
         params:
           - name: client-name
             value: $(params.sender)
@@ -75,11 +74,39 @@ spec:
           - name: config-dir
             workspace: shared-workspace
 
+      - name: clone-repo
+        taskRef:
+          name: git-clone
+        runAfter:
+          - setup
+        params:
+          - name: url
+            value: "$(params.repo_url)"
+          - name: revision
+            value: "$(params.revision)"
+        workspaces:
+          - name: output
+            workspace: shared-workspace
+
+      - name: build
+        taskRef:
+          name: aib-build
+        runAfter:
+          - clone-repo
+        params:
+          - name: cmd
+            value: "pwd && ls -la"
+        workspaces:
+          - name: source
+            workspace: shared-workspace
+          - name: config-dir
+            workspace: shared-workspace
+
       - name: get-lease
         taskRef:
           name: jmp-get-lease
         runAfter:
-          - setup
+          - build
         params:
           - name: client-name
             value: $(tasks.setup.results.jmp-client-name)

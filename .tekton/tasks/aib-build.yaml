@@ -1,0 +1,32 @@
+kind: Task
+apiVersion: tekton.dev/v1beta1
+metadata:
+  name: aib-build
+spec:
+  description: |
+     Exceute bash commands in a container with the tools needed for RHAS development.
+  params:
+    - name: cmd
+      description: "Bash command to execute"
+      type: string
+
+  steps:
+    - name: build
+      image: ghcr.io/rhadp/builder:latest
+      script: |
+        #!/usr/bin/env bash
+        set -x
+
+        source /venv/bin/activate
+
+        cd /workspace/source
+
+        echo "Executing bash command: '$(params.cmd)'"
+        eval "$(params.cmd)"
+
+  workspaces:
+    - name: source
+      description: The workspace where the source code is located
+    - name: config-dir
+      description: Workspace for mounting Jumpstarter client configuration
+      mountPath: /opt/app-root/.config/jumpstarter
