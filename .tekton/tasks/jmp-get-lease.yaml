@@ -61,6 +61,7 @@ spec:
         # Request a lease
         JMP_LEASE_ID=$(timeout "$(params.timeout)" $CLIENT_LEASE_CMD --duration "$(params.lease-duration)" -o name) 
 
+        echo "Aquired lease $JMP_LEASE_ID for client $CLIENT_NAME"
         # Output the lease ID to the Tekton results
         echo -n "$JMP_LEASE_ID" > $(results.jmp-lease-id.path)
   

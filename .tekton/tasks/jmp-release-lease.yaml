@@ -39,6 +39,7 @@ spec:
         jmp config client use $CLIENT_NAME
         
         # Release the lease
+        echo "Deleting lease $(params.jmp-lease-id)"
         jmp delete leases $(params.jmp-lease-id)
   
   workspaces:
