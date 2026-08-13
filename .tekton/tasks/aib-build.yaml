@@ -6,9 +6,10 @@ spec:
   description: |
      Exceute bash commands in a container with the tools needed for RHAS development.
   params:
-    - name: cmd
-      description: "Bash command to execute"
+    - name: client-name
       type: string
+      description: The client intending to acquire the lease.
+      default: "default"
 
   steps:
     - name: build

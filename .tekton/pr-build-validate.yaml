@@ -94,8 +94,8 @@ spec:
         runAfter:
           - clone-repo
         params:
-          - name: cmd
-            value: "pwd && ls -la"
+          - name: client-name
+            value: $(tasks.setup.results.jmp-client-name)
         workspaces:
           - name: source
             workspace: shared-workspace
