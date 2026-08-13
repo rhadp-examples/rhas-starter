@@ -46,7 +46,7 @@ spec:
         mkdir -p $CONFIG_DIR
 
         # write the jumpstarter config to the expected location
-        echo "$(oc -n $NAMESPACE get secret $(params.client-name) -o jsonpath='{.data.config}' | base64 -d)" > "$CONFIG_DIR/$(params.client-name).yaml"
+        echo "$(oc -n $NAMESPACE get secret $CLIENT_NAME -o jsonpath='{.data.config}' | base64 -d)" > "$CONFIG_DIR/$CLIENT_NAME.yaml"
 
         # Use the client name provided in the parameter
         jmp config client use $(params.client-name)
