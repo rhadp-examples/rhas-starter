@@ -10,6 +10,9 @@ spec:
       type: string
       description: The client intending to acquire the lease.
       default: "default"
+    - name: cmd
+      description: "CAIB command to execute"
+      type: string
 
   steps:
     - name: build
@@ -37,8 +40,8 @@ spec:
         cd /workspace/source
         ls -la
 
-        echo "TESTING caib"
-        caib status
+        echo "Run caib $(params.cmd)"
+        caib $(params.cmd)
 
   workspaces:
     - name: source
