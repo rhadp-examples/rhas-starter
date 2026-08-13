@@ -39,8 +39,7 @@ spec:
 
         echo "PWD" && pwd
         echo "/workspace ->" && ls -la /workspace
-        echo "/opt/app-root/.config/jumpstarter ->" && ls -la /opt/app-root/.config/jumpstarter
-
+        echo "/workspace/source ->" && ls -la /workspace/source
 
         CONFIG_DIR="/opt/app-root/.config/jumpstarter/clients"
 
@@ -61,6 +60,5 @@ spec:
         echo -n "$JMP_LEASE_ID" > $(results.jmp-lease-id.path)
   
   workspaces:
-    - name: config-dir
-      description: Workspace for mounting Jumpstarter client configuration
-      mountPath: /opt/app-root/.config/jumpstarter
+    - name: source
+      description: The workspace where the source code is located

@@ -59,7 +59,6 @@ spec:
         default: "00:20:00"
 
     workspaces:
-      - name: shared-config
       - name: shared-workspace
 
     tasks:
@@ -73,41 +72,13 @@ spec:
             value: $(params.namespace)
         workspaces:
           - name: config-dir
-            workspace: shared-config
-
-      - name: clone-repo
-        taskRef:
-          name: git-clone
-        runAfter:
-          - setup
-        params:
-          - name: url
-            value: "$(params.repo_url)"
-          - name: revision
-            value: "$(params.revision)"
-        workspaces:
-          - name: output
             workspace: shared-workspace
-
-      - name: build
-        taskRef:
-          name: aib-build
-        runAfter:
-          - clone-repo
-        params:
-          - name: cmd
-            value: "pwd && ls -la"
-        workspaces:
-          - name: source
-            workspace: shared-workspace
-          - name: config-dir
-            workspace: shared-config
 
       - name: get-lease
         taskRef:
           name: jmp-get-lease
         runAfter:
-          - build
+          - setup
         params:
           - name: client-name
             value: $(tasks.setup.results.jmp-client-name)
@@ -119,7 +90,7 @@ spec:
             value: $(params.lease-duration)
         workspaces:
           - name: config-dir
-            workspace: shared-config
+            workspace: shared-workspace
 
     finally:
       - name: cleanup
@@ -134,17 +105,9 @@ spec:
             value: $(params.namespace)
         workspaces:
           - name: config-dir
-            workspace: shared-config
+            workspace: shared-workspace
 
   workspaces:
-    - name: shared-config
-      volumeClaimTemplate:
-        spec:
-          accessModes:
-            - ReadWriteOnce
-          resources:
-            requests:
-              storage: 1Gi
     - name: shared-workspace
       volumeClaimTemplate:
         spec:

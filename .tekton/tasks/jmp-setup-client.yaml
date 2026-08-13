@@ -76,12 +76,12 @@ spec:
         # create the client config
         jmp admin create client $CLIENT_NAME --insecure-tls --unsafe --nointeractive -n $(params.namespace) --oidc-username keycloak:$(params.client-name) --out $CONFIG_FILE
 
-        # store the config in a secrets
+        # store the config in a secret
         oc -n $NAMESPACE create secret generic $CLIENT_NAME --from-file jmp.config=$CONFIG_FILE
 
         # output the client name to the results
         echo "$CLIENT_NAME" > $(results.jmp-client-name.path)
   
   workspaces:
-    - name: config-dir
-      description: Workspace for mounting Jumpstarter client configuration
+    - name: source
+      description: The workspace where the source code is located

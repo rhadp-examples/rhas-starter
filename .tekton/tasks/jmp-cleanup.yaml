@@ -63,12 +63,16 @@ spec:
           jmp delete leases $(params.jmp-lease-id)
         fi
 
-        # remove the client from the namespace
+        # remove the jumpstarter client from the namespace
         if oc get client "$(params.client-name)" -n $(params.namespace) &>/dev/null; then
           oc delete client "$(params.client-name)" -n $(params.namespace) &>/dev/null || true
         fi
 
+        # remove the secret with the jumpstarter config
+        if oc get secret $CLIENT_NAME -n $NAMESPACE &>/dev/null; then
+          oc -n $NAMESPACE delete secret $CLIENT_NAME
+        fi
+
   workspaces:
-    - name: config-dir
-      description: Workspace for mounting Jumpstarter client configuration
-      mountPath: /opt/app-root/.config/jumpstarter
+    - name: source
+      description: The workspace where the source code is located
