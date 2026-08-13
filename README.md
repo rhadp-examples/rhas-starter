@@ -30,3 +30,4 @@ uname -m
 test
 test
 test
+test
