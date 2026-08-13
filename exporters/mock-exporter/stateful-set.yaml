@@ -147,7 +147,7 @@ spec:
               # create the exporter config
               EXPORTER_NAME=$(cat /etc/hostname)
 
-              jmp admin create exporter "$EXPORTER_NAME" -n $JMP_NAMESPACE --label platform=arm --label type=test --save --insecure-tls --nointeractive --out ./dummy.yaml
+              jmp admin create exporter "$EXPORTER_NAME" -n $JMP_NAMESPACE --label platform=arm --label type=mock-exporter --save --insecure-tls --nointeractive --out ./dummy.yaml
               TOKEN=$(yq '.token' dummy.yaml)
               echo "$TOKEN" > token
 
