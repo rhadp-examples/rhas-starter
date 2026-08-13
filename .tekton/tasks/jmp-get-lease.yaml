@@ -37,15 +37,14 @@ spec:
         set -x
         source /venv/bin/activate
 
-        echo "PWD" && pwd
-        echo "/workspace ->" && ls -la /workspace
-        echo "/workspace/source ->" && ls -la /workspace/source
+        # Extract the values from the service account
+        NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
 
         CONFIG_DIR="/opt/app-root/.config/jumpstarter/clients"
         mkdir -p $CONFIG_DIR
 
         # write the jumpstarter config to the expected location
-        oc -n mickume-devspaces get secret $(params.client-name) -o jsonpath='{.data.jmp\.config}' | base64 -d > $CONFIG_DIR/$(params.client-name).yaml
+        echo $(oc -n $NAMESPACE get secret $(params.client-name) -o jsonpath='{.data.config}' | base64 -d) > $CONFIG_DIR/$(params.client-name).yaml
 
         # Use the client name provided in the parameter
         jmp config client use $(params.client-name)

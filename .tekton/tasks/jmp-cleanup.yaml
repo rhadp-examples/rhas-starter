@@ -70,7 +70,7 @@ spec:
 
         # remove the secret with the jumpstarter config
         if oc get secret $CLIENT_NAME -n $NAMESPACE &>/dev/null; then
-          oc -n $NAMESPACE delete secret $CLIENT_NAME
+          # oc -n $NAMESPACE delete secret $CLIENT_NAME
         fi
 
   workspaces:
