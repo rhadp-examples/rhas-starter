@@ -62,7 +62,8 @@ spec:
 
         BUILD_PARAMS="image build-dev $(params.manifest) -n $(params.run-id) --internal-registry --target $(params.target) --arch $(params.architecture) --mode $(params.mode) --format $(params.format) $(params.extra-args)"
         echo "aib $BUILD_PARAMS"
-        caib $BUILD_PARAMS
+        caib "$BUILD_PARAMS --output-format json" > aib.json
+        cat aib.json
 
   workspaces:
     - name: source
