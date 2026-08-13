@@ -37,14 +37,16 @@ spec:
         set -x
         source /venv/bin/activate
 
-        # Extract the values from the service account
+        # Extract the values from the service account and params
         NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
+        CLIENT_NAME=$(echo "$(params.client-name)" | tr -d '[:space:]')
 
+        # create the config loaction if it does not already exist
         CONFIG_DIR="/opt/app-root/.config/jumpstarter/clients"
         mkdir -p $CONFIG_DIR
 
         # write the jumpstarter config to the expected location
-        echo "$(oc -n $NAMESPACE get secret $(params.client-name) -o jsonpath='{.data.config}' | base64 -d)" > $CONFIG_DIR/$(params.client-name).yaml
+        echo "$(oc -n $NAMESPACE get secret $(params.client-name) -o jsonpath='{.data.config}' | base64 -d)" > "$CONFIG_DIR/$(params.client-name).yaml"
 
         # Use the client name provided in the parameter
         jmp config client use $(params.client-name)
