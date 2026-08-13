@@ -51,7 +51,7 @@ spec:
       - name: exporter-labels
         type: array
         default:
-          - "type=test"
+          - "type=mock-exporter"
       - name: lease-timeout
         default: "3600"
       - name: lease-duration
