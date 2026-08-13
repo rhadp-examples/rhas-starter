@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
-  name: pr-test
+  name: pr-build-validate
   annotations:
     # pipeline tasks
     pipelinesascode.tekton.dev/task: "[git-clone]"
@@ -68,7 +68,7 @@ spec:
           name: jmp-setup-client
         params:
           - name: client-name
-            value: $(params.sender)
+            value: $(params.sender)-$(context.pipelineRun.name)
           - name: namespace
             value: $(params.namespace)
         workspaces:
