@@ -1,13 +1,9 @@
 #!/usr/bin/env bash
-set -euo pipefail
+#set -euo pipefail
+set -x
 
 GIT_PAT_NAME="${GIT_PAT_NAME:-personal-access-token-git-pac}"
 NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
-
-# Extract the values from the service account   
-#TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
-#API_SERVER=$(oc whoami --show-server)
-#POD_NAME=$(cat /etc/hostname)
 
 CONSOLE_URL=$(oc whoami --show-console)
 BASE_URL=${CONSOLE_URL#https://console-openshift-console.}
