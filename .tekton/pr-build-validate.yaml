@@ -59,6 +59,7 @@ spec:
         default: "00:20:00"
 
     workspaces:
+      - name: shared-config
       - name: shared-workspace
 
     tasks:
@@ -72,7 +73,7 @@ spec:
             value: $(params.namespace)
         workspaces:
           - name: config-dir
-            workspace: shared-workspace
+            workspace: shared-config
 
       - name: clone-repo
         taskRef:
@@ -100,7 +101,7 @@ spec:
           - name: source
             workspace: shared-workspace
           - name: config-dir
-            workspace: shared-workspace
+            workspace: shared-config
 
       - name: get-lease
         taskRef:
@@ -118,7 +119,7 @@ spec:
             value: $(params.lease-duration)
         workspaces:
           - name: config-dir
-            workspace: shared-workspace
+            workspace: shared-config
 
     finally:
       - name: cleanup
@@ -133,9 +134,17 @@ spec:
             value: $(params.namespace)
         workspaces:
           - name: config-dir
-            workspace: shared-workspace
+            workspace: shared-config
 
   workspaces:
+    - name: shared-config
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 1Gi
     - name: shared-workspace
       volumeClaimTemplate:
         spec:
