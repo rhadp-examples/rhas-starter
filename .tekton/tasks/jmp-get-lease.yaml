@@ -34,7 +34,7 @@ spec:
 
       script: |
         #!/usr/bin/env bash
-        set -x
+        set +eux
         source /venv/bin/activate
 
         # Extract the values from the service account and params

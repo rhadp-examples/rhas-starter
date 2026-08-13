@@ -58,8 +58,6 @@ spec:
 
         oc config use-context rhas-pac-ctx
 
-        set -x
-
         # normalization for used in jumpstarter/kubernetes
         CLIENT_NAME="$(echo $(params.client-name) | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9-]/-/g; s/-\+/-/g; s/^-//; s/-$//' | cut -c1-63)"
         if oc get client "$CLIENT_NAME" -n $(params.namespace) &>/dev/null; then
