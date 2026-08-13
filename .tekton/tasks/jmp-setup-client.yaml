@@ -61,7 +61,7 @@ spec:
         set -x
 
         # normalization for used in jumpstarter/kubernetes
-        CLIENT_NAME="$(echo $(params.client-name) | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9-]/-/g; s/-\+/-/g; s/^-//; s/-$//' | cut -c1-63)-pac"
+        CLIENT_NAME="$(echo $(params.client-name) | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9-]/-/g; s/-\+/-/g; s/^-//; s/-$//' | cut -c1-63)"
         if oc get client "$CLIENT_NAME" -n $(params.namespace) &>/dev/null; then
           oc delete client "$CLIENT_NAME" -n $(params.namespace) &>/dev/null || true
         fi
@@ -76,14 +76,8 @@ spec:
         # create the client config
         jmp admin create client $CLIENT_NAME --insecure-tls --unsafe --nointeractive -n $(params.namespace) --oidc-username keycloak:$(params.client-name) --out $CONFIG_FILE
 
-        # create the user config file
-        cat <<EOF > $XDG_CONFIG_HOME/jumpstarter/default.yaml
-        apiVersion: jumpstarter.dev/v1alpha1
-        kind: UserConfig
-        config:
-          current-client: $CLIENT_NAME
-        EOF
-        cp $XDG_CONFIG_HOME/jumpstarter/default.yaml $XDG_CONFIG_HOME/jumpstarter/config.yaml
+        # store the config in a secrets
+        oc -n $NAMESPACE create secret generic $CLIENT_NAME --from-literal jmp.config=$(cat $CONFIG_FILE)
 
         # output the client name to the results
         echo "$CLIENT_NAME" > $(results.jmp-client-name.path)
@@ -91,4 +85,3 @@ spec:
   workspaces:
     - name: config-dir
       description: Workspace for mounting Jumpstarter client configuration
-      mountPath: /opt/app-root/.config/jumpstarter
