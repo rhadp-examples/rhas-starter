@@ -43,6 +43,3 @@ spec:
   workspaces:
     - name: source
       description: The workspace where the source code is located
-    - name: config-dir
-      description: Workspace for mounting Jumpstarter client configuration
-      mountPath: /opt/app-root/.config/jumpstarter
