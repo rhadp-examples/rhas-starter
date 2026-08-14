@@ -175,6 +175,8 @@ spec:
                 insecure: true
               token: $(cat token)
               export:
+                storage:
+                  type: jumpstarter_driver_opendal.driver.MockStorageMux
                 power:
                   type: jumpstarter_driver_power.driver.MockPower
               EOF
