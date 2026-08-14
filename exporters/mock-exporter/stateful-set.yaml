@@ -5,7 +5,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "1"
 spec:
-  replicas: 3
+  replicas: 1
   serviceName: mock-exporter
   podManagementPolicy: Parallel
   selector:
@@ -176,7 +176,7 @@ spec:
               token: $(cat token)
               export:
                 storage:
-                  type: jumpstarter_driver_opendal.driver.MockStorageMux
+                  type: jumpstarter_driver_opendal.driver.MockFlasher #StorageMux
                 power:
                   type: jumpstarter_driver_power.driver.MockPower
               EOF
