@@ -208,16 +208,6 @@ spec:
                     smp: 2
                     mem: 12G
                     arch: aarch64
-                    # tpm/virtio_transport are not yet supported by the published
-                    # jumpstarter `develop` branch (JUMPSTARTER_VERSION in
-                    # containers/runtime/Containerfile) - passing them causes
-                    # `Qemu.__init__() got an unexpected keyword argument` and a
-                    # crash-loop. Support has been ported and committed locally on
-                    # develop in the jumpstarter repo, but not yet pushed to
-                    # origin/develop. Re-add these two keys once that commit is
-                    # pushed and the exporter image is rebuilt against it:
-                    #   tpm: true
-                    #   virtio_transport: mmio
                     default_partitions:
                       OVMF_CODE.fd: /usr/share/AAVMF/AAVMF_CODE.fd
                       OVMF_VARS.fd: /usr/share/AAVMF/AAVMF_VARS.fd
