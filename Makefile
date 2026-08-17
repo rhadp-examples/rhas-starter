@@ -6,7 +6,8 @@ NAMESPACE ?= rhadp-examples
 CONTAINER_TOOL ?= podman
 
 # Image name and tag
-CONTAINER_IMAGE := ghcr.io/rhadp-examples/rhas-starter
+STARTER_CONTAINER_IMAGE := ghcr.io/rhadp-examples/rhas-starter
+EXPORTER_CONTAINER_IMAGE := ghcr.io/rhadp-examples/rhas-exporter
 TAG ?= latest
 
 # Build arguments
@@ -21,15 +22,21 @@ AUTOSD_TARGET ?= qemu
 JUMPSTARTER_REPO ?= https://github.com/mickume/jumpstarter
 JUMPSTARTER_VERSION ?= develop
 
-.PHONY: local-venv build-container
+.PHONY: local-venv build-starter-container build-exporter-container
 
 local-venv:
 	uv venv --clear venv
 	source venv/bin/activate && \
 	uv pip install "git+$(JUMPSTARTER_REPO)@$(JUMPSTARTER_VERSION)#subdirectory=python/packages/jumpstarter-all"
 
-build-container:
+build-starter-container:
 	$(CONTAINER_TOOL) build $(BUILD_ARGS) \
 		-f containers/rhas-starter/Containerfile \
-		-t $(CONTAINER_IMAGE):$(TAG) \
+		-t $(STARTER_CONTAINER_IMAGE):$(TAG) \
 		containers/rhas-starter/
+
+build-exporter-container:
+	$(CONTAINER_TOOL) build $(BUILD_ARGS) \
+		-f containers/rhas-exporter/Containerfile \
+		-t $(EXPORTER_CONTAINER_IMAGE):$(TAG) \
+		containers/rhas-exporter/

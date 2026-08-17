@@ -14,11 +14,24 @@ ENV ARCH=${TARGETARCH:-arm64} \
 ENV UV_PYTHON=python3.14 VIRTUAL_ENV=/venv
 
 # install basic packages & virtualization packages
-# NOTE: qemu-kvm, libvirt and the @virtualization-* groups live in RHEL's
-# AppStream channel, not in the base UBI repos. This build must run on a
-# subscription-manager registered RHEL host (or with entitlement certs
-# mounted into the builder) so dnf can see those repos, otherwise this step
-# fails with "no package found" errors.
+ARG CENTOS_STREAM_VERSION=10.0-23.el10
+
+# UBI10 doesn't ship qemu-kvm/libvirt/the @virtualization-* groups, and this
+# build environment has no RHEL entitlement (subscription-manager) to reach
+# the real RHEL AppStream repos for them. Pull in the matching CentOS
+# Stream 10 repos instead: CentOS Stream is upstream of RHEL 10, so its
+# BaseOS/AppStream package and group definitions line up with what an
+# entitled RHEL host would otherwise provide. EPEL is already enabled by
+# the base ghcr.io/rhadp/runtime image, so it isn't touched here.
+RUN if [ "$ARCH" = "arm64" ]; then \
+        CENTOS_ARCH=aarch64; \
+    else \
+        CENTOS_ARCH=x86_64; \
+    fi && \
+    dnf install -y --setopt=tsflags=nodocs \
+        "https://mirror.stream.centos.org/10-stream/BaseOS/${CENTOS_ARCH}/os/Packages/centos-stream-repos-${CENTOS_STREAM_VERSION}.noarch.rpm" \
+        "https://mirror.stream.centos.org/10-stream/BaseOS/${CENTOS_ARCH}/os/Packages/centos-gpg-keys-${CENTOS_STREAM_VERSION}.noarch.rpm"
+
 RUN dnf install -y --setopt=tsflags=nodocs \
     stow qemu-kvm qemu-img libvirt \
     "@virtualization-hypervisor" "@virtualization-client" "@virtualization-platform" "@virtualization-tools" \
