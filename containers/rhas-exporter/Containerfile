@@ -60,7 +60,7 @@ COPY containers/rhas-exporter/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Install the rhas driver packages (local forks of jumpstarter drivers) directly from GitHub
-RUN /venv/bin/uv pip install \
+RUN uv pip install \
         "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-qemu" \
         "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-opendal" \
         "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-power"
