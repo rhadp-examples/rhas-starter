@@ -46,4 +46,4 @@ build-exporter-container:
 	$(CONTAINER_TOOL) build $(BUILD_ARGS) \
 		-f containers/rhas-exporter/Containerfile \
 		-t $(EXPORTER_CONTAINER_IMAGE):$(TAG) \
-		.
+		containers/rhas-exporter/

@@ -56,7 +56,7 @@ RUN dnf install -y --setopt=tsflags=nodocs \
 RUN mkdir -p /tmp/swtpm && \
     chgrp -R 0 /tmp/swtpm && \
     chmod -R g=u /tmp/swtpm
-COPY containers/rhas-exporter/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Install the rhas driver packages (local forks of jumpstarter drivers) directly from GitHub
