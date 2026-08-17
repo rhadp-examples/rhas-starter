@@ -19,3 +19,14 @@ jobs:
       contents: read
       id-token: write
       attestations: write
+
+  build-rhas-exporter:
+    uses: ./.github/workflows/build.yaml
+    with:
+      container_name: rhas-exporter
+    secrets: inherit
+    permissions:
+      packages: write
+      contents: read
+      id-token: write
+      attestations: write

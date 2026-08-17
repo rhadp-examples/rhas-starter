@@ -1,0 +1,52 @@
+FROM ghcr.io/rhadp/runtime:latest
+
+USER root
+
+ARG TARGETARCH
+
+# define some environment variables
+ENV ARCH=${TARGETARCH:-arm64} \
+    HOME=/home/tooling \
+    APP_ROOT=/home/tooling \
+    XDG_CONFIG_HOME=/home/tooling/.config 
+
+# set the virtual environment for jumpstarter etc
+ENV UV_PYTHON=python3.14 VIRTUAL_ENV=/venv
+
+# install basic packages & virtualization packages
+# NOTE: qemu-kvm, libvirt and the @virtualization-* groups live in RHEL's
+# AppStream channel, not in the base UBI repos. This build must run on a
+# subscription-manager registered RHEL host (or with entitlement certs
+# mounted into the builder) so dnf can see those repos, otherwise this step
+# fails with "no package found" errors.
+RUN dnf install -y --setopt=tsflags=nodocs \
+    stow qemu-kvm qemu-img libvirt \
+    "@virtualization-hypervisor" "@virtualization-client" "@virtualization-platform" "@virtualization-tools" \
+    virt-install virt-viewer \
+    genisoimage \
+    swtpm swtpm-tools tpm2-tools && \
+    dnf -y clean all --enablerepo='*' && \
+    rm -rf /var/cache/dnf
+
+# install swtpm
+# entrypoint.sh only runs `swtpm socket`, so only the tpmstate dir is
+# needed. /var/lib/swtpm-localca is intentionally left out since nothing
+# here calls swtpm_setup/swtpm_cert to provision a local CA; add it back
+# (with the same chgrp/chmod treatment) if EK/platform cert provisioning
+# is introduced later.
+RUN mkdir -p /tmp/swtpm && \
+    chgrp -R 0 /tmp/swtpm && \
+    chmod -R g=u /tmp/swtpm
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# A last pass to make sure that an arbitrary user can write in $HOME
+RUN chgrp -R 0 /home && chmod -R g=u /home
+
+USER 10001
+ENV HOME=/home/user
+WORKDIR /projects
+
+ENV TPM2TOOLS_TCTI="swtpm:host=127.0.0.1,port=2321"
+ENTRYPOINT ["entrypoint.sh"]
+CMD ["tail", "-f", "/dev/null"]
