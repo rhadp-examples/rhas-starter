@@ -6,9 +6,10 @@ ARG TARGETARCH
 
 # define some environment variables
 ENV ARCH=${TARGETARCH:-arm64} \
-    HOME=/home/tooling \
-    APP_ROOT=/home/tooling \
-    XDG_CONFIG_HOME=/home/tooling/.config 
+    HOME=/opt/app-root/src \
+    APP_ROOT=/opt/app-root \
+    XDG_CONFIG_HOME=/opt/app-root/.config \
+    PATH=/opt/app-root/src/bin:/opt/app-root/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 # set the virtual environment for jumpstarter etc
 ENV UV_PYTHON=python3.14 VIRTUAL_ENV=/venv
@@ -62,12 +63,12 @@ RUN if [ "$ARCH" = "arm64" ]; then \
     fi  && \
     chmod +x /usr/local/bin/fls
 
+WORKDIR ${HOME}
+
 # A last pass to make sure that an arbitrary user can write in $HOME
 RUN chgrp -R 0 /home && chmod -R g=u /home
 
-USER 10001
-ENV HOME=/home/user
-WORKDIR /projects
+USER 1001
 
 ENV TPM2TOOLS_TCTI="swtpm:host=127.0.0.1,port=2321"
 ENTRYPOINT ["entrypoint.sh"]
