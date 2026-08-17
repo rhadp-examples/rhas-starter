@@ -22,13 +22,19 @@ AUTOSD_TARGET ?= qemu
 JUMPSTARTER_REPO ?= https://github.com/mickume/jumpstarter
 JUMPSTARTER_VERSION ?= develop
 
+RHAS_STARTER_REPO ?= https://github.com/rhadp-examples/rhas-starter
+RHAS_STARTER_VERSION ?= main
+
 .PHONY: local-venv build-starter-container build-exporter-container
 
 local-venv:
 	uv venv --clear venv
 	source venv/bin/activate && \
 	uv pip install "git+$(JUMPSTARTER_REPO)@$(JUMPSTARTER_VERSION)#subdirectory=python/packages/jumpstarter-all" && \
-	uv pip install packages/rhas-driver-qemu packages/rhas-driver-opendal packages/rhas-driver-power
+	uv pip install \
+		"git+$(RHAS_STARTER_REPO)@$(RHAS_STARTER_VERSION)#subdirectory=packages/rhas-driver-qemu" \
+		"git+$(RHAS_STARTER_REPO)@$(RHAS_STARTER_VERSION)#subdirectory=packages/rhas-driver-opendal" \
+		"git+$(RHAS_STARTER_REPO)@$(RHAS_STARTER_VERSION)#subdirectory=packages/rhas-driver-power"
 
 build-starter-container:
 	$(CONTAINER_TOOL) build $(BUILD_ARGS) \
