@@ -175,10 +175,27 @@ spec:
                 insecure: true
               token: $(cat token)
               export:
-                storage:
-                  type: jumpstarter_driver_opendal.driver.MockFlasher #StorageMux
+                console:
+                  ref: qemu.console
+                flasher:
+                  ref: qemu.flasher
                 power:
-                  type: jumpstarter_driver_power.driver.MockPower
+                  ref: qemu.power
+                qemu:
+                  type: jumpstarter_driver_qemu.driver.Qemu
+                  config:
+                    smp: 2
+                    mem: 12G
+                    tpm: true
+                    arch: aarch64
+                    virtio_transport: mmio # mmio is the default, but we can switch to virtio-pci if needed
+                    default_partitions:
+                      OVMF_CODE.fd: /usr/share/AAVMF/AAVMF_CODE.fd
+                      OVMF_VARS.fd: /usr/share/AAVMF/AAVMF_VARS.fd
+                    hostfwd:
+                      ssh:
+                        hostport: 9022
+                        guestport: 22
               EOF
 
               sleep 60s
