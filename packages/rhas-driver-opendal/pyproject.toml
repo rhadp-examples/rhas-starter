@@ -1,0 +1,18 @@
+[project]
+name = "rhas-driver-opendal"
+version = "0.1.0"
+description = "RHAS fork of the jumpstarter OpenDAL/flasher driver"
+license = "Apache-2.0"
+requires-python = ">=3.11"
+dependencies = [
+  "jumpstarter",
+  "opendal>=0.45.8,<0.46",
+  "click>=8.1.7.2",
+]
+
+[project.entry-points."jumpstarter.adapters"]
+RhasOpendal = "rhas_driver_opendal.adapter:OpendalAdapter"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

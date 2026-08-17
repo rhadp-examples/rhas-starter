@@ -28,7 +28,7 @@ local-venv:
 	uv venv --clear venv
 	source venv/bin/activate && \
 	uv pip install "git+$(JUMPSTARTER_REPO)@$(JUMPSTARTER_VERSION)#subdirectory=python/packages/jumpstarter-all" && \
-	uv pip install packages/rhas-driver-qemu
+	uv pip install packages/rhas-driver-qemu packages/rhas-driver-opendal packages/rhas-driver-power
 
 build-starter-container:
 	$(CONTAINER_TOOL) build $(BUILD_ARGS) \

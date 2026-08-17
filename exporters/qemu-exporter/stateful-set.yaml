@@ -138,8 +138,8 @@ spec:
               # debugging - update to latest jumpstarter version
               uv pip install --reinstall "git+https://github.com/mickume/jumpstarter@develop#subdirectory=python/packages/jumpstarter-all"
 
-              # reinstall rhas-driver-qemu so its entry points survive the jumpstarter-all reinstall above
-              uv pip install --reinstall /opt/rhas-driver-qemu
+              # reinstall rhas drivers so their entry points survive the jumpstarter-all reinstall above
+              uv pip install --reinstall /opt/rhas-driver-qemu /opt/rhas-driver-opendal /opt/rhas-driver-power
 
               # Trust the internal registry's service-serving CA
               if [ -f /etc/pki/ca-trust/source/anchors/service-ca-bundle.crt ]; then

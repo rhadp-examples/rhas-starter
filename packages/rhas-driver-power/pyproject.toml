@@ -1,0 +1,14 @@
+[project]
+name = "rhas-driver-power"
+version = "0.1.0"
+description = "RHAS fork of the jumpstarter power driver"
+license = "Apache-2.0"
+requires-python = ">=3.11"
+dependencies = ["jumpstarter", "pyserial>=3.5", "click>=8.1.7.2"]
+
+[project.entry-points."jumpstarter.drivers"]
+RhasMockPower = "rhas_driver_power.driver:MockPower"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
