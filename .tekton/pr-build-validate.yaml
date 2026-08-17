@@ -144,7 +144,7 @@ spec:
             value: $(tasks.setup.results.jmp-client-name)
           - name: jmp-lease-id
             value: $(tasks.get-lease.results.jmp-lease-id)
-          - name: jmp-command
+          - name: jmp-cmd
             value: "j power on"
         workspaces:
           - name: source
