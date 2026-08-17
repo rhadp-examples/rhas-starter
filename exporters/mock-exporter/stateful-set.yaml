@@ -96,6 +96,21 @@ spec:
               memory: "2G"
           securityContext:
             privileged: true
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/bash
+                  - -c
+                  - |
+                    source /venv/bin/activate
+
+                    EXPORTER_NAME=$(cat /etc/hostname)
+                    echo "Pod is terminating, deleting exporter '$EXPORTER_NAME' ..."
+
+                    # ~/.kube/config was already set up by the container's
+                    # main command on startup, so oc is already authenticated
+                    timeout 20s oc delete exporter "$EXPORTER_NAME" -n "$JMP_NAMESPACE" --ignore-not-found || true
           volumeMounts:
             - mountPath: /etc/pki/ca-trust/source/anchors/service-ca-bundle.crt
               name: registry-ca
@@ -106,10 +121,10 @@ spec:
               value: "1"
             - name: JMP_NAMESPACE
               value: "auto-jumpstarter"
-            - name: OCI_USERNAME
-              value: "serviceaccount"
-            - name: OCI_PASSWORD_FILE
-              value: "/var/run/secrets/kubernetes.io/serviceaccount/token"
+            #- name: OCI_USERNAME
+            #  value: "serviceaccount"
+            #- name: OCI_PASSWORD_FILE
+            #  value: "/var/run/secrets/kubernetes.io/serviceaccount/token"
           command:
             - /bin/bash
             - -c

@@ -124,10 +124,10 @@ spec:
               value: "1"
             - name: JMP_NAMESPACE
               value: "auto-jumpstarter"
-            - name: OCI_USERNAME
-              value: "serviceaccount"
-            - name: OCI_PASSWORD_FILE
-              value: "/var/run/secrets/kubernetes.io/serviceaccount/token"
+            #- name: OCI_USERNAME
+            #  value: "serviceaccount"
+            #- name: OCI_PASSWORD_FILE
+            #  value: "/var/run/secrets/kubernetes.io/serviceaccount/token"
           command:
             - /bin/bash
             - -c
