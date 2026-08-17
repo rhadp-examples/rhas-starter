@@ -26,3 +26,4 @@ Log in with **root** / **password**, then verify:
 uname -r
 uname -m
 ```
+test
