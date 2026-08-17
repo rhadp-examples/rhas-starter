@@ -27,7 +27,8 @@ JUMPSTARTER_VERSION ?= develop
 local-venv:
 	uv venv --clear venv
 	source venv/bin/activate && \
-	uv pip install "git+$(JUMPSTARTER_REPO)@$(JUMPSTARTER_VERSION)#subdirectory=python/packages/jumpstarter-all"
+	uv pip install "git+$(JUMPSTARTER_REPO)@$(JUMPSTARTER_VERSION)#subdirectory=python/packages/jumpstarter-all" && \
+	uv pip install packages/rhas-driver-qemu
 
 build-starter-container:
 	$(CONTAINER_TOOL) build $(BUILD_ARGS) \
@@ -39,4 +40,4 @@ build-exporter-container:
 	$(CONTAINER_TOOL) build $(BUILD_ARGS) \
 		-f containers/rhas-exporter/Containerfile \
 		-t $(EXPORTER_CONTAINER_IMAGE):$(TAG) \
-		containers/rhas-exporter/
+		.

@@ -1,0 +1,25 @@
+[project]
+name = "rhas-driver-qemu"
+version = "0.1.0"
+description = "RHAS fork of the jumpstarter QEMU driver with TPM and virtio transport support"
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.11"
+dependencies = [
+  "jumpstarter",
+  "jumpstarter-driver-composite",
+  "jumpstarter-driver-network",
+  "jumpstarter-driver-power",
+  "jumpstarter-driver-pyserial",
+  "pyyaml>=6.0.2",
+  "qemu-qmp>=0.0.3",
+]
+
+[project.entry-points."jumpstarter.drivers"]
+RhasQemuFlasher = "rhas_driver_qemu.driver:QemuFlasher"
+RhasQemuPower = "rhas_driver_qemu.driver:QemuPower"
+RhasQemu = "rhas_driver_qemu.driver:Qemu"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
