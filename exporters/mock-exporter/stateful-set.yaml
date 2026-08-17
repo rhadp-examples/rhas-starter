@@ -41,7 +41,7 @@ spec:
 
       initContainers:
         - name: jumpstarter-init
-          image: ghcr.io/rhadp/runtime:latest
+          image: ghcr.io/rhadp-examples/rhas-exporter:latest
           imagePullPolicy: Always
           env:
             - name: JMP_NAMESPACE
@@ -85,7 +85,7 @@ spec:
 
       containers:
         - name: jumpstarter-exporter
-          image: ghcr.io/rhadp/runtime:latest
+          image: ghcr.io/rhadp-examples/rhas-exporter:latest
           imagePullPolicy: Always
           resources:
             limits:
