@@ -14,6 +14,11 @@ ENV ARCH=${TARGETARCH:-arm64} \
 ENV UV_PYTHON=python3.14 VIRTUAL_ENV=/venv
 
 # TODO: add yoour own modifications here
+ENV JUMPSTARTER_REPO=https://github.com/mickume/jumpstarter \
+    JUMPSTARTER_VERSION=develop
+
+RUN uv venv --clear /venv && \
+    uv pip install "git+${JUMPSTARTER_REPO}@${JUMPSTARTER_VERSION}#subdirectory=python/packages/jumpstarter-all"
 
 # A last pass to make sure that an arbitrary user can write in $HOME
 RUN chgrp -R 0 /home && chmod -R g=u /home
