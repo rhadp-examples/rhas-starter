@@ -8,7 +8,7 @@ spec:
   params:
     - name: client-name
       type: string
-      description: The client intending to acquire the lease.
+      description: "The client intending to access Jumpstarter"
       default: "default"
     - name: namespace
       type: string

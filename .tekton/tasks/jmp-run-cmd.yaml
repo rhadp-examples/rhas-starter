@@ -1,10 +1,10 @@
 apiVersion: tekton.dev/v1
 kind: Task
 metadata:
-  name: jmp-release-lease
+  name: jmp-run-cmd
 spec:
   description: |
-    Release a lease acquired from Jumpstarter using the provided client name and lease ID.
+    Run a command
   params:
     - name: client-name
       type: string
@@ -12,7 +12,10 @@ spec:
       default: "default"
     - name: jmp-lease-id
       type: string
-      description: "The lease ID to be released"
+      description: "The lease ID to use for command execution"
+    - name: jmp-cmd
+      type: string
+      description: "The commands to run"
   
   steps:
     - name: acquire-lease
@@ -37,10 +40,16 @@ spec:
 
         # Use the client name provided in the parameter
         jmp config client use $CLIENT_NAME
+
+        # Set the Jumpstarter lease environment variable
+        export JMP_LEASE="$(params.jmp-lease-id)"
         
-        # Release the lease
-        echo "Deleting lease $(params.jmp-lease-id)"
-        jmp delete leases $(params.jmp-lease-id)
+        # Run the command
+        echo "Running cmd $(params.jmp-cmd)"
+        
+        jmp shell --lease "${JMP_LEASE}" <<-EOF
+          $(params.jmp-cmd)
+        EOF
   
   workspaces:
     - name: source

@@ -8,14 +8,14 @@ spec:
   params:
     - name: client-name
       type: string
-      description: "The jumpstarter client config."
+      description: "The jumpstarter client config"
       default: "default"
     - name: run-id
       type: string
       description: "The pipeline run ID"
     - name: manifest
       type: string
-      description: "The manifest.aib.yml to build."
+      description: "The manifest.aib.yml to build"
     - name: target
       type: string
       description: "Target platform"

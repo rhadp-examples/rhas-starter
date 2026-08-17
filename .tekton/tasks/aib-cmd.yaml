@@ -8,7 +8,7 @@ spec:
   params:
     - name: client-name
       type: string
-      description: The client intending to acquire the lease.
+      description: "The jumpstarter client config"
       default: "default"
     - name: cmd
       description: "CAIB command to execute"
