@@ -34,6 +34,9 @@ spec:
                 - "true"
       serviceAccountName: qemu-exporter
       restartPolicy: Always
+      # give the preStop hook below enough time to run `oc delete exporter`
+      # before kubelet moves on to SIGTERM/SIGKILL
+      terminationGracePeriodSeconds: 60
       volumes:
         - name: registry-ca
           configMap:
@@ -96,6 +99,21 @@ spec:
               memory: "2G"
           securityContext:
             privileged: true
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/bash
+                  - -c
+                  - |
+                    source /venv/bin/activate
+
+                    EXPORTER_NAME=$(cat /etc/hostname)
+                    echo "Pod is terminating, deleting exporter '$EXPORTER_NAME' ..."
+
+                    # ~/.kube/config was already set up by the container's
+                    # main command on startup, so oc is already authenticated
+                    timeout 20s oc delete exporter "$EXPORTER_NAME" -n "$JMP_NAMESPACE" --ignore-not-found || true
           volumeMounts:
             - mountPath: /etc/pki/ca-trust/source/anchors/service-ca-bundle.crt
               name: registry-ca
@@ -116,6 +134,9 @@ spec:
             - |
               set -eo pipefail
               source /venv/bin/activate
+
+              # debugging - update to latest jumpstarter version
+              uv pip install --reinstall "git+https://github.com/mickume/jumpstarter@develop#subdirectory=python/packages/jumpstarter-all"
 
               # Trust the internal registry's service-serving CA
               if [ -f /etc/pki/ca-trust/source/anchors/service-ca-bundle.crt ]; then
@@ -186,9 +207,17 @@ spec:
                   config:
                     smp: 2
                     mem: 12G
-                    tpm: true
                     arch: aarch64
-                    virtio_transport: mmio # mmio is the default, but we can switch to virtio-pci if needed
+                    # tpm/virtio_transport are not yet supported by the published
+                    # jumpstarter `develop` branch (JUMPSTARTER_VERSION in
+                    # containers/runtime/Containerfile) - passing them causes
+                    # `Qemu.__init__() got an unexpected keyword argument` and a
+                    # crash-loop. Support has been ported and committed locally on
+                    # develop in the jumpstarter repo, but not yet pushed to
+                    # origin/develop. Re-add these two keys once that commit is
+                    # pushed and the exporter image is rebuilt against it:
+                    #   tpm: true
+                    #   virtio_transport: mmio
                     default_partitions:
                       OVMF_CODE.fd: /usr/share/AAVMF/AAVMF_CODE.fd
                       OVMF_VARS.fd: /usr/share/AAVMF/AAVMF_VARS.fd

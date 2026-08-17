@@ -14,7 +14,8 @@ ENV ARCH=${TARGETARCH:-arm64} \
 ENV UV_PYTHON=python3.14 VIRTUAL_ENV=/venv
 
 # install basic packages & virtualization packages
-ARG CENTOS_STREAM_VERSION=10.0-23.el10
+ARG CENTOS_STREAM_VERSION=10.0-23.el10 \
+    FLASHER_VERSION=0.3.0
 
 # UBI10 doesn't ship qemu-kvm/libvirt/the @virtualization-* groups, and this
 # build environment has no RHEL entitlement (subscription-manager) to reach
@@ -52,6 +53,14 @@ RUN mkdir -p /tmp/swtpm && \
     chmod -R g=u /tmp/swtpm
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# install the Fast Flash Tool https://github.com/jumpstarter-dev/fls
+RUN if [ "$ARCH" = "arm64" ]; then \
+        curl -L https://github.com/jumpstarter-dev/fls/releases/download/${FLASHER_VERSION}/fls-aarch64-linux-musl -o /usr/local/bin/fls; \
+    else \
+        curl -L https://github.com/jumpstarter-dev/fls/releases/download/${FLASHER_VERSION}/fls-x86_64-linux -o /usr/local/bin/fls; \
+    fi  && \
+    chmod +x /usr/local/bin/fls
 
 # A last pass to make sure that an arbitrary user can write in $HOME
 RUN chgrp -R 0 /home && chmod -R g=u /home
