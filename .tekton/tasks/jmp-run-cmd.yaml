@@ -16,11 +16,14 @@ spec:
     - name: jmp-cmd
       type: string
       description: "The commands to run"
+    - name: image
+      type: string
+      description: "Container image to run. Use to provide own image with extensions"
+      default: "ghcr.io/rhadp/pipeline:latest"
   
   steps:
-    - name: acquire-lease
-      image: ghcr.io/rhadp/pipeline:latest 
-      args: ["$(params.exporter-labels[*])"]
+    - name: run-cmd
+      image: "$(params.image)"
 
       script: |
         #!/usr/bin/env bash

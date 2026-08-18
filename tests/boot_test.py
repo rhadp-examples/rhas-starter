@@ -15,7 +15,7 @@ class TestBootProcess(JumpstarterTest):
     def test_boot(self, client):
         """Test the boot process of the device."""
         log.info("Testing boot process")
-        client.power.cycle()
+        client.power.on()
         
         with client.console.pexpect() as console:
             # uncomment this if you want to see the console in action while testing

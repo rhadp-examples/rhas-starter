@@ -15,7 +15,7 @@ spec:
       description: "The lease ID to be released"
   
   steps:
-    - name: acquire-lease
+    - name: delete-lease
       image: ghcr.io/rhadp/pipeline:latest 
       args: ["$(params.exporter-labels[*])"]
 

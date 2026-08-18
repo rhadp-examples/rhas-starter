@@ -28,7 +28,7 @@ spec:
       type: string
   
   steps:
-    - name: acquire-lease
+    - name: get-lease
       image: ghcr.io/rhadp/pipeline:latest
       args: ["$(params.exporter-labels[*])"]
 

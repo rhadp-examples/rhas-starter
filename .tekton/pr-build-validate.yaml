@@ -146,6 +146,8 @@ spec:
             value: $(tasks.get-lease.results.jmp-lease-id)
           - name: jmp-cmd
             value: "j power on"
+          - name: image
+            value: "ghcr.io/rhadp-examples/rhas-exporter:latest"
         workspaces:
           - name: source
             workspace: shared-workspace

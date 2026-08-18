@@ -20,7 +20,7 @@ spec:
       default: "auto-jumpstarter"
 
   steps:
-    - name: setup-client
+    - name: cleanup
       image: ghcr.io/rhadp/pipeline:latest
 
       script: |
