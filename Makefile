@@ -71,6 +71,7 @@ build-rpm-local: clean
 	  cp $${RPMBUILD}/SOURCES/*.tar.gz $(CURDIR)/bin/ && \
 	  cp $${RPMBUILD}/RPMS/*/*.rpm $(CURDIR)/bin/ && \
 	  rm -rf $${NAME}-$${VERSION} $${NAME}-$${VERSION}.tar.gz $${RPMBUILD}
+	createrepo_c --update $(CURDIR)/bin
 	  
 build-starter-container:
 	$(CONTAINER_TOOL) build $(BUILD_ARGS) \
