@@ -45,7 +45,8 @@ spec:
         export JMP_CLIENT_CONFIG="$CONFIG_DIR/$CLIENT_NAME.yaml"
 
         # execute this command
-        caib "workspace exec $(params.workspace) -- $(params.cmd)"
+        WORKSPACE=$(echo "$(params.workspace)" | tr -d '[:space:]')
+        caib "workspace exec $WORKSPACE -- $(params.cmd)"
 
   workspaces:
     - name: source

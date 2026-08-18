@@ -84,9 +84,9 @@ spec:
         # Set the Jumpstarter environment variables
         export JMP_CLIENT_CONFIG="$CONFIG_DIR/$CLIENT_NAME.yaml"
 
-        WORKSPACE=""
-        if [ -n "$(params.workspace)" ]; then
-          WORKSPACE=" --workspace $(params.workspace)"
+        WORKSPACE=$(echo "$(params.workspace)" | tr -d '[:space:]')
+        if [ -n "$WORKSPACE" ]; then
+          WORKSPACE=" --workspace $WORKSPACE"
         fi
 
         BUILD_PARAMS="image build-dev $(params.manifest) -n $(params.run-id) --internal-registry $WORKSPACE --target $(params.target) --arch $(params.architecture) --mode $(params.mode) --format $(params.format) $(params.extra-args) --quiet --output-format json"
