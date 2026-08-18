@@ -90,37 +90,37 @@ spec:
           - name: output
             workspace: shared-workspace
 
-      #- name: build
-      #  taskRef:
-      #    name: aib-build-dev
-      #  runAfter:
-      #    - clone-repo
-      #  params:
-      #    - name: client-name
-      #      value: $(tasks.setup.results.jmp-client-name)
-      #    - name: run-id
-      #      value: $(context.pipelineRun.name)
-      #    - name: manifest
-      #      value: "manifests/minimal.aib.yml"
-      #    - name: target
-      #      value: "qemu"
-      #    - name: architecture
-      #      value: "arm64"
-      #    - name: mode
-      #      value: "image"
-      #    - name: format
-      #      value: "qcow2"
-      #    #- name: extra-args
-      #    #  value: "-o ./images/minimal.qcow2"
-      #  workspaces:
-      #    - name: source
-      #      workspace: shared-workspace
+      - name: build
+        taskRef:
+          name: aib-build-dev
+        runAfter:
+          - clone-repo
+        params:
+          - name: client-name
+            value: $(tasks.setup.results.jmp-client-name)
+          - name: run-id
+            value: $(context.pipelineRun.name)
+          - name: manifest
+            value: "manifests/minimal.aib.yml"
+          - name: target
+            value: "qemu"
+          - name: architecture
+            value: "arm64"
+          - name: mode
+            value: "image"
+          - name: format
+            value: "qcow2"
+          #- name: extra-args
+          #  value: "-o ./images/minimal.qcow2"
+        workspaces:
+          - name: source
+            workspace: shared-workspace
 
       - name: get-lease
         taskRef:
           name: jmp-get-lease
         runAfter:
-          - clone-repo
+          - build
         params:
           - name: client-name
             value: $(tasks.setup.results.jmp-client-name)
@@ -145,9 +145,7 @@ spec:
           - name: jmp-lease-id
             value: $(tasks.get-lease.results.jmp-lease-id)
           - name: jmp-cmd
-            value: "j flasher flash oci://default-route-openshift-image-registry.apps.rhas.sandbox1453.opentlc.com/automotive-dev-operator-system/pr-build-validate-g1wq52-a46fc:disk "
-            #value: "j"
-            #value: "j flasher flash oci://$(tasks.build.results.disk-image)"
+            value: "j flasher flash oci://$(tasks.build.results.disk-image)"
           - name: image
             value: "ghcr.io/rhadp-examples/rhas-exporter:latest"
         workspaces:
