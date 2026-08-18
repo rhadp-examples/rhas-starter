@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
-  name: pr-build-validate
+  name: pr-rpm-build
   annotations:
     # pipeline tasks
     pipelinesascode.tekton.dev/task: "[git-clone]"
