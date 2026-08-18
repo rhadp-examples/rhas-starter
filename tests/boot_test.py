@@ -18,8 +18,6 @@ class TestBootProcess(JumpstarterTest):
         client.power.on()
         
         with client.console.pexpect() as console:
-            # uncomment this if you want to see the console in action while testing
-            console.logfile_read = sys.stdout.buffer
             console.expect_exact("login:", timeout=120)
             console.sendline("root")
             console.expect_exact("Password:", timeout=10)
@@ -32,5 +30,6 @@ class TestBootProcess(JumpstarterTest):
             console.expect_exact("]#", timeout=10)
             print(console.before.decode())
 
+    @pytest.mark.skip(reason="only enabled to test pipeline failures")
     def test_fail(self):
-        pytest.fail("Intentional failure")
+        pytest.fail("failure")

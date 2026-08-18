@@ -12,7 +12,6 @@ TAG ?= latest
 
 # Build arguments
 BUILD_ARGS ?= --build-arg TARGETARCH=$(shell uname -m | sed 's/x86_64/amd64/')
-PROJECT_DIR := /projects
 
 # auto-app version and build metadata
 VERSION ?= 0.1
@@ -23,13 +22,15 @@ AUTOSD_MANIFEST ?= manifests/auto-app.aib.yml
 AUTOSD_IMAGE ?= images/auto-app-autosd.qcow2
 AUTOSD_TARGET ?= qemu
 
+# Fork of Jumstarter with some patches not yet on upstream
 JUMPSTARTER_REPO ?= https://github.com/mickume/jumpstarter
 JUMPSTARTER_VERSION ?= develop
 
+# Custom jumpstarter drivers used for this demo
 RHAS_STARTER_REPO ?= https://github.com/rhadp-examples/rhas-starter
 RHAS_STARTER_VERSION ?= main
 
-.PHONY: clean local-venv build-starter-container build-exporter-container
+.PHONY: clean local-venv build-local build-rpm-local build-starter-container build-exporter-container
 
 clean:
 	rm -rf src/build src/CMakeCache.txt src/cmake_install.cmake src/CMakeFiles src/auto-app
@@ -51,7 +52,7 @@ build-local: clean
 	cmake --build src/build
 	cp src/build/auto-app bin/
 
-build-rpm-local:
+build-rpm-local: clean
 	cd /tmp && \
 	  NAME=auto-app && \
 	  VERSION=$(VERSION) && \
