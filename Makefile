@@ -14,7 +14,12 @@ TAG ?= latest
 BUILD_ARGS ?= --build-arg TARGETARCH=$(shell uname -m | sed 's/x86_64/amd64/')
 
 # auto-app version and build metadata
-VERSION ?= 0.1
+# NOTE: uses ":=" (not "?=") on purpose. Some builder container images leak a
+# VERSION environment variable (e.g. via "source /etc/os-release"), which
+# "?=" would silently pick up instead of our default, desyncing the tarball
+# name from the version hardcoded in src/auto-app.spec. ":=" still allows an
+# explicit override via "make VERSION=x ...".
+VERSION := 0.1
 GIT_REV := $(shell git rev-parse --short HEAD 2>/dev/null || echo unknown)
 
 # AutoSD (RHIVOS) image build
