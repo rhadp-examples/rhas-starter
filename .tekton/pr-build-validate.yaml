@@ -157,7 +157,7 @@ spec:
           - name: jmp-lease-id
             value: $(tasks.get-lease.results.jmp-lease-id)
           - name: jmp-cmd
-            value: "j flasher flash oci://$(tasks.build.results.disk-image)"
+            value: "j flasher flash oci://$(tasks.build-os.results.disk-image)"
           - name: image
             value: "ghcr.io/rhadp-examples/rhas-exporter:latest"
         workspaces:
