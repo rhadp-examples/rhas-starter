@@ -32,6 +32,21 @@ spec:
         source /venv/bin/activate
         cd /workspace/source
 
+        # Tekton's creds-init auto-populates $HOME/.docker/config.json (and
+        # .dockercfg) with this Task's own ServiceAccount pull-secret creds
+        # for every registry host it knows about, including the internal
+        # OpenShift registry route. jumpstarter's OCI credential resolution
+        # (used by e.g. `j flasher flash oci://...`) treats that file as a
+        # client-side auth-file fallback and forwards the credentials it
+        # finds to the exporter, which takes them over the exporter's own
+        # scoped OCI_USERNAME/OCI_PASSWORD_FILE credentials. That silently
+        # swaps in this pipeline's own SA identity - which typically has no
+        # pull access to the namespace the image was built in - causing
+        # 401 Unauthorized even though the exporter is correctly configured.
+        # Point HOME elsewhere so no such auth file is found and the
+        # exporter's own credentials are used instead.
+        export HOME="$(mktemp -d)"
+
         # Extract the values from the service account and params
         NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
         CLIENT_NAME=$(echo "$(params.client-name)" | tr -d '[:space:]')
