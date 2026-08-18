@@ -10,10 +10,6 @@ spec:
       type: string
       description: "The jumpstarter client config"
       default: "default"
-    - name: jmp-lease-id
-      type: string
-      description: "The lease ID to use for build execution"
-      default: ""
     - name: run-id
       type: string
       description: "The pipeline run ID"
@@ -93,12 +89,7 @@ spec:
           WORKSPACE="--workspace $WORKSPACE"
         fi
 
-        FLASH_PARAMS=""
-        if [ -n "$(params.jmp-lease-id)" ]; then
-          FLASH_PARAMS="--flash --flash-cmd 'flasher flash' --lease $(params.jmp-lease-id)"
-        fi
-
-        BUILD_PARAMS="image build-dev $(params.manifest) -n $(params.run-id) --internal-registry $WORKSPACE $FLASH_PARAMS --target $(params.target) --arch $(params.architecture) --mode $(params.mode) --format $(params.format) $(params.extra-args) --quiet --output-format json"
+        BUILD_PARAMS="image build-dev $(params.manifest) -n $(params.run-id) --internal-registry $WORKSPACE --target $(params.target) --arch $(params.architecture) --mode $(params.mode) --format $(params.format) $(params.extra-args) --quiet --output-format json"
         echo "caib $BUILD_PARAMS"
         caib $BUILD_PARAMS > /tmp/aib.json
 

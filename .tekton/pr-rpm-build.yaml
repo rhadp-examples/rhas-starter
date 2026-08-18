@@ -151,8 +151,6 @@ spec:
         params:
           - name: client-name
             value: $(tasks.setup.results.jmp-client-name)
-          - name: jmp-lease-id
-            value: $(tasks.get-lease.results.jmp-lease-id)
           - name: run-id
             value: $(context.pipelineRun.name)
           - name: manifest
@@ -173,11 +171,29 @@ spec:
           - name: source
             workspace: shared-workspace
 
-      - name: validate
+      - name: flash
         taskRef:
           name: jmp-run-cmd
         runAfter:
           - build-os
+        params:
+          - name: client-name
+            value: $(tasks.setup.results.jmp-client-name)
+          - name: jmp-lease-id
+            value: $(tasks.get-lease.results.jmp-lease-id)
+          - name: jmp-cmd
+            value: "j flasher flash oci://$(tasks.build-os.results.disk-image)"
+          - name: image
+            value: "ghcr.io/rhadp-examples/rhas-exporter:latest"
+        workspaces:
+          - name: source
+            workspace: shared-workspace
+
+      - name: validate
+        taskRef:
+          name: jmp-run-cmd
+        runAfter:
+          - flash
         params:
           - name: client-name
             value: $(tasks.setup.results.jmp-client-name)
