@@ -92,6 +92,13 @@ spec:
         BUILD_PARAMS="image build-dev $(params.manifest) -n $(params.run-id) --internal-registry $WORKSPACE --target $(params.target) --arch $(params.architecture) --mode $(params.mode) --format $(params.format) $(params.extra-args) --quiet --output-format json"
         echo "caib $BUILD_PARAMS"
         caib $BUILD_PARAMS > /tmp/aib.json
+        CAIB_EXIT_CODE=$?
+
+        if [ $CAIB_EXIT_CODE -ne 0 ]; then
+          echo "caib command failed with exit code $CAIB_EXIT_CODE"
+          cat /tmp/aib.json
+          exit $CAIB_EXIT_CODE
+        fi
 
         # extract the values
         DISK_IMAGE=$(jq -r '.diskImage' /tmp/aib.json)
