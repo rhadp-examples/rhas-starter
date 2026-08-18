@@ -18,7 +18,7 @@ spec:
       type: string
       default: ""
     - name: auto-sync
-      type: bool
+      type: boolean
       default: false
 
   steps:
