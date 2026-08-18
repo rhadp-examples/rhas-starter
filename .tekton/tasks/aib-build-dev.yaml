@@ -40,6 +40,16 @@ spec:
     - name: build-result
       description: "aib results as json string"
       type: string
+    - name: build-phase
+      type: string
+    - name: build-message
+      type: string
+    - name: disk-image
+      type: string
+    - name: registry-user
+      type: string
+    - name: registry-token
+      type: string
 
   steps:
     - name: build
@@ -69,9 +79,20 @@ spec:
         echo "caib $BUILD_PARAMS"
         caib $BUILD_PARAMS > /tmp/aib.json
 
+        # extract the values
+        DISK_IMAGE=$(jq -r '.diskImage' /tmp/aib.json)
+        REGISTRY_USER=$(jq -r '.registryUsername' /tmp/aib.json)
+        REGISTRY_TOKEN=$(jq -r '.registryToken' /tmp/aib.json)
+        BUILD_PHASE=$(jq -r '.phase' /tmp/aib.json)
+        BUILD_MESSAGE=$(jq -r '.message' /tmp/aib.json)
+
         # return the build results
-        cat /tmp/aib.json
         cat /tmp/aib.json > $(results.build-result.path)
+        echo $BUILD_PHASE > $(results.build-phase.path)
+        echo $BUILD_MESSAGE > $(results.build-message.path)
+        echo $DISK_IMAGE > $(results.disk-image.path)
+        echo $REGISTRY_USER > $(results.registry-user.path)
+        echo $REGISTRY_TOKEN > $(results.registry-token.path)
 
   workspaces:
     - name: source
