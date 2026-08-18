@@ -22,7 +22,7 @@ spec:
       image: ghcr.io/rhadp/builder:latest
       script: |
         #!/usr/bin/env bash
-        set -x
+        set +eux
 
         source /venv/bin/activate
         cd /workspace/source
@@ -46,7 +46,7 @@ spec:
 
         # check the status of the workspace
         caib status
-        
+
         # execute this command
         WORKSPACE=$(echo "$(params.workspace)" | tr -d '[:space:]')
         caib workspace exec $WORKSPACE -- $(params.cmd)
