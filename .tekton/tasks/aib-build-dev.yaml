@@ -69,7 +69,7 @@ spec:
 
         # Extract the values from the service account and params
         NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
-        CLIENT_NAME=$(echo "$(params.client-name)" | tr -d '[:space:]')
+        CLIENT_NAME=$(params.client-name)
 
         # create the config loaction if it does not already exist
         CONFIG_DIR="/opt/app-root/.config/jumpstarter/clients"
@@ -84,7 +84,7 @@ spec:
         # Set the Jumpstarter environment variables
         export JMP_CLIENT_CONFIG="$CONFIG_DIR/$CLIENT_NAME.yaml"
 
-        WORKSPACE=$(echo "$(params.workspace)" | tr -d '[:space:]')
+        WORKSPACE=$(params.workspace)
         if [ -n "$WORKSPACE" ]; then
           WORKSPACE=" --workspace $WORKSPACE"
         fi
@@ -103,12 +103,12 @@ spec:
 
         # return the build results
         cat /tmp/aib.json > $(results.build-result.path)
-        echo $BUILD_NAME > $(results.build-name.path)
-        echo $BUILD_PHASE > $(results.build-phase.path)
-        echo $BUILD_MESSAGE > $(results.build-message.path)
-        echo $DISK_IMAGE > $(results.disk-image.path)
-        echo $REGISTRY_USER > $(results.registry-user.path)
-        echo $REGISTRY_TOKEN > $(results.registry-token.path)
+        echo -n $BUILD_NAME > $(results.build-name.path)
+        echo -n $BUILD_PHASE > $(results.build-phase.path)
+        echo -n $BUILD_MESSAGE > $(results.build-message.path)
+        echo -n $DISK_IMAGE > $(results.disk-image.path)
+        echo -n $REGISTRY_USER > $(results.registry-user.path)
+        echo -n $REGISTRY_TOKEN > $(results.registry-token.path)
 
   workspaces:
     - name: source

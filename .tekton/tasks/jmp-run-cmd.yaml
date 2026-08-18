@@ -49,7 +49,7 @@ spec:
 
         # Extract the values from the service account and params
         NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
-        CLIENT_NAME=$(echo "$(params.client-name)" | tr -d '[:space:]')
+        CLIENT_NAME=$(params.client-name)
 
         # create the config loaction if it does not already exist
         CONFIG_DIR="/opt/app-root/.config/jumpstarter/clients"
