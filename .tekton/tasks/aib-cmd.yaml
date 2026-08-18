@@ -43,6 +43,12 @@ spec:
 
         echo "caib $(params.cmd)"
         caib $(params.cmd)
+        CAIB_EXIT_CODE=$?
+
+        if [ $CAIB_EXIT_CODE -ne 0 ]; then
+          echo "caib command failed with exit code $CAIB_EXIT_CODE"
+          exit $CAIB_EXIT_CODE
+        fi
 
   workspaces:
     - name: source
