@@ -22,6 +22,7 @@ spec:
         set -x
 
         source /venv/bin/activate
+        cd /workspace/source
 
         # Extract the values from the service account and params
         NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)

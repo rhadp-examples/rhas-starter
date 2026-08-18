@@ -29,6 +29,9 @@ spec:
         #!/usr/bin/env bash
         set -x
         source /venv/bin/activate
+        cd /workspace/source
+        ls -la
+        uv pip list
 
         # Extract the values from the service account and params
         NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
