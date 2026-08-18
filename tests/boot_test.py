@@ -24,12 +24,12 @@ class TestBootProcess(JumpstarterTest):
             console.sendline("password")
             console.expect_exact("]#", timeout=10)
 
-    def test_uname(self, client):
+    def test_auto_app(self, client):
         with client.console.pexpect() as console:
-            console.sendline("uname -a")
+            console.sendline("auto-app")
             console.expect_exact("]#", timeout=10)
             print(console.before.decode())
 
-    @pytest.mark.skip(reason="only enabled to test pipeline failures")
-    def test_fail(self):
-        pytest.fail("failure")
+#    @pytest.mark.skip(reason="only enabled to test pipeline failures")
+#    def test_fail(self):
+#        pytest.fail("failure")
