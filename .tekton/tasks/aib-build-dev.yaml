@@ -63,6 +63,8 @@ spec:
 
         source /venv/bin/activate
         cd /workspace/source
+        ls -la bin/
+        ls -la bin/repodata
 
         # Extract the values from the service account and params
         NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
