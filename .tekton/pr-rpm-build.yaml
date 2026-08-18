@@ -16,7 +16,7 @@ metadata:
 
     # pipeline events
     pipelinesascode.tekton.dev/on-event: "[push,pull_request]"
-    pipelinesascode.tekton.dev/on-target-branch: "[main, release]"
+    pipelinesascode.tekton.dev/on-target-branch: "[develop]"
     
     #pipelinesascode.tekton.dev/on-path-changed: "[src/**]"
     pipelinesascode.tekton.dev/cancel-in-progress: "true"
@@ -52,7 +52,7 @@ spec:
       - name: name
         default: rhas-starter
       - name: manifest
-        default: "manifests/minimal.aib.yml"
+        default: "manifests/auto-app.aib.yml"
       - name: exporter-labels
         type: array
         default:
@@ -92,11 +92,23 @@ spec:
           - name: output
             workspace: shared-workspace
 
+      - name: build-rpm
+        taskRef:
+          name: bash
+        runAfter:
+          - clone-repo
+        params:
+          - name: cmd
+            value: "make build-rpm-local"
+        workspaces:
+          - name: source
+            workspace: shared-workspace
+
       - name: build-os
         taskRef:
           name: aib-build-dev
         runAfter:
-          - clone-repo
+          - build-rpm
         params:
           - name: client-name
             value: $(tasks.setup.results.jmp-client-name)
