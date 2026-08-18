@@ -95,7 +95,7 @@ spec:
 
         FLASH_PARAMS=""
         if [ -n "$(params.jmp-lease-id)" ]; then
-          FLASH_PARAMS="--flash --lease $(params.jmp-lease-id)"
+          FLASH_PARAMS="--flash --flash-cmd "flasher flash oci://<disk-image>" --lease $(params.jmp-lease-id)"
         fi
 
         BUILD_PARAMS="image build-dev $(params.manifest) -n $(params.run-id) --internal-registry $WORKSPACE $FLASH_PARAMS --target $(params.target) --arch $(params.architecture) --mode $(params.mode) --format $(params.format) $(params.extra-args) --quiet --output-format json"
