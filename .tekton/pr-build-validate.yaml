@@ -52,7 +52,7 @@ spec:
       - name: name
         default: rhas-starter
       - name: manifest
-        default: "manifests/auto-app.aib.yml"
+        default: "manifests/minimal.aib.yml"
       - name: exporter-labels
         type: array
         default:
@@ -90,18 +90,6 @@ spec:
             value: "$(params.revision)"
         workspaces:
           - name: output
-            workspace: shared-workspace
-
-      - name: build-rpm
-        taskRef:
-          name: bash
-        runAfter:
-          - clone-repo
-        params:
-          - name: cmd
-            value: "make build-rpm-local"
-        workspaces:
-          - name: source
             workspace: shared-workspace
 
       - name: build-os

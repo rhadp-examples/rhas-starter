@@ -5,7 +5,7 @@ name: auto-app
 content:
   repos:
     - id: local
-      baseurl: file:///workspace/source/bin
+      baseurl: file:///workspace/src/bin
       priority: 10
   rpms:
     - auto-app
