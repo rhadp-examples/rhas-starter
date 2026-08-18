@@ -68,7 +68,7 @@ spec:
       - name: shared-workspace
 
     tasks:
-      - name: setup-jmp
+      - name: setup
         taskRef:
           name: jmp-setup-client
         params:
@@ -84,7 +84,7 @@ spec:
         taskRef:
           name: git-clone
         runAfter:
-          - setup-jmp
+          - setup
         params:
           - name: url
             value: "$(params.repo_url)"
