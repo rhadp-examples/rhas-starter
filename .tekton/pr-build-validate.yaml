@@ -51,6 +51,8 @@ spec:
         default: auto-jumpstarter
       - name: name
         default: rhas-starter
+      - name: manifest
+        default: "manifests/auto-app.aib.yml"
       - name: exporter-labels
         type: array
         default:
@@ -113,7 +115,7 @@ spec:
           - name: run-id
             value: $(context.pipelineRun.name)
           - name: manifest
-            value: "manifests/minimal.aib.yml"
+            value: "$(params.manifest)"
           - name: target
             value: "qemu"
           - name: architecture
