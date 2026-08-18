@@ -31,6 +31,11 @@ spec:
         source /venv/bin/activate
         cd /workspace/source
 
+        # The git-clone task runs as a different (non-root) UID than this
+        # step's image, so git refuses to operate on the checkout here
+        # ("detected dubious ownership") unless we mark it as safe.
+        git config --global --add safe.directory /workspace/source
+
         # Extract the values from the service account and params
         NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
         CLIENT_NAME=$(echo "$(params.client-name)" | tr -d '[:space:]')
