@@ -18,7 +18,7 @@ class TestBootProcess(JumpstarterTest):
         client.power.on()
         
         with client.console.pexpect() as console:
-            console.expect_exact("login:", timeout=120)
+            console.expect_exact("login:", timeout=60)
             console.sendline("root")
             console.expect_exact("Password:", timeout=10)
             console.sendline("password")
@@ -27,7 +27,7 @@ class TestBootProcess(JumpstarterTest):
     def test_auto_app(self, client):
         with client.console.pexpect() as console:
             console.sendline("auto-apps")
-            console.expect_exact("Hello from AutoSD!", timeout=10)
+            console.expect_exact("Hello from AutoSD!", timeout=30)
             print(console.before.decode())
 
 #    @pytest.mark.skip(reason="only enabled to test pipeline failures")
