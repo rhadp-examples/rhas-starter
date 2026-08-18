@@ -18,8 +18,8 @@ spec:
       type: string
       default: ""
     - name: auto-sync
-      type: boolean
-      default: false
+      type: string
+      default: "false"
 
   steps:
     - name: setup
