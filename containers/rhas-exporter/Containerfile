@@ -61,9 +61,9 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Install the rhas driver packages (local forks of jumpstarter drivers) directly from GitHub
 RUN uv pip install \
-        "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-qemu" \
-        "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-opendal" \
-        "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-power"
+    "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-qemu" \
+    "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-opendal" \
+    "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-power"
 
 # install the Fast Flash Tool https://github.com/jumpstarter-dev/fls
 RUN if [ "$ARCH" = "arm64" ]; then \

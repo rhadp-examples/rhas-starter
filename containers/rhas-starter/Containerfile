@@ -17,6 +17,7 @@ ENV UV_PYTHON=python3.14 VIRTUAL_ENV=/venv
 ENV JUMPSTARTER_REPO=https://github.com/mickume/jumpstarter \
     JUMPSTARTER_VERSION=develop
 
+# install jumpstarter, again, to have the latest version of the packages, without rebuilding the base image every time
 RUN uv venv --clear /venv && \
     uv pip install "git+${JUMPSTARTER_REPO}@${JUMPSTARTER_VERSION}#subdirectory=python/packages/jumpstarter-all"
 
