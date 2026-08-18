@@ -34,7 +34,8 @@ spec:
 
       script: |
         #!/usr/bin/env bash
-        set +eux
+        #set +eux
+        set -x
         source /venv/bin/activate
 
         # Extract the values from the service account and params
@@ -51,6 +52,10 @@ spec:
         # Use the client name provided in the parameter
         jmp config client use $CLIENT_NAME
 
+        # Set the Jumpstarter environment variables
+        export JMP_CLIENT_CONFIG="$CONFIG_DIR/$CLIENT_NAME.yaml"
+        cat $JMP_CLIENT_CONFIG
+
         # Loop through each label provided as argument and build 
         CLIENT_LEASE_CMD="jmp create lease"
         for label in "$@"; do
@@ -59,6 +64,7 @@ spec:
         done
 
         # Request a lease
+        echo "$CLIENT_LEASE_CMD --duration "$(params.lease-duration)"
         JMP_LEASE_ID=$(timeout "$(params.timeout)" $CLIENT_LEASE_CMD --duration "$(params.lease-duration)" -o name) 
 
         echo "Aquired lease $JMP_LEASE_ID for client $CLIENT_NAME"
