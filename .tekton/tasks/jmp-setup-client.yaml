@@ -33,7 +33,9 @@ spec:
       script: |
         #!/usr/bin/env bash
         set +eux
+
         source /venv/bin/activate
+        cd /workspace/source
 
         # Setup .kube correctly. Extract the values from the service account
         POD_TOKEN_FILE="/var/run/secrets/kubernetes.io/serviceaccount/token"

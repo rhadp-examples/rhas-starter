@@ -28,6 +28,7 @@ spec:
       script: |
         #!/usr/bin/env bash
         set +eux
+
         source /venv/bin/activate
         cd /workspace/source
 
