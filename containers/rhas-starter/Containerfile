@@ -19,15 +19,12 @@ ENV JUMPSTARTER_REPO=https://github.com/mickume/jumpstarter \
     RHAS_STARTER_REPO=https://github.com/rhadp-examples/rhas-starter \
     RHAS_STARTER_VERSION=main
 
-# install jumpstarter, again, to have the latest version of the packages, without rebuilding the base image every time
+# Install the rhas driver packages (local forks of jumpstarter drivers) directly from GitHub, and any other patches to Jumpstarter
 RUN uv venv --clear /venv && \
-    uv pip install "git+${JUMPSTARTER_REPO}@${JUMPSTARTER_VERSION}#subdirectory=python/packages/jumpstarter-all"
-
-# Install the rhas driver packages (local forks of jumpstarter drivers) directly from GitHub
-RUN uv pip install \
-    "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-qemu" \
-    "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-opendal" \
-    "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-power"
+    uv pip install "git+${JUMPSTARTER_REPO}@${JUMPSTARTER_VERSION}#subdirectory=python/packages/jumpstarter-all" \
+        "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-qemu" \
+        "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-opendal" \
+        "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-power"
 
 # A last pass to make sure that an arbitrary user can write in $HOME
 RUN chgrp -R 0 /home && chmod -R g=u /home

@@ -28,7 +28,7 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: auto.node-role/builder
+              - key: auto.node-role/metal
                 operator: In
                 values:
                 - "true"

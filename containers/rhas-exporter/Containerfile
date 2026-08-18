@@ -15,7 +15,9 @@ ENV ARCH=${TARGETARCH:-arm64} \
 ENV UV_PYTHON=python3.14 VIRTUAL_ENV=/venv
 
 # repo/ref providing the rhas-driver-* packages (local forks of jumpstarter drivers)
-ENV RHAS_STARTER_REPO=https://github.com/rhadp-examples/rhas-starter \
+ENV JUMPSTARTER_REPO=https://github.com/mickume/jumpstarter \
+    JUMPSTARTER_VERSION=develop \
+    RHAS_STARTER_REPO=https://github.com/rhadp-examples/rhas-starter \
     RHAS_STARTER_VERSION=main
 
 # install basic packages & virtualization packages
@@ -59,11 +61,12 @@ RUN mkdir -p /tmp/swtpm && \
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
-# Install the rhas driver packages (local forks of jumpstarter drivers) directly from GitHub
-RUN uv pip install \
-    "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-qemu" \
-    "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-opendal" \
-    "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-power"
+# Install the rhas driver packages (local forks of jumpstarter drivers) directly from GitHub, and any other patches to Jumpstarter
+RUN uv venv --clear /venv && \
+    uv pip install "git+${JUMPSTARTER_REPO}@${JUMPSTARTER_VERSION}#subdirectory=python/packages/jumpstarter-all" \
+        "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-qemu" \
+        "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-opendal" \
+        "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-power"
 
 # install the Fast Flash Tool https://github.com/jumpstarter-dev/fls
 RUN if [ "$ARCH" = "arm64" ]; then \
