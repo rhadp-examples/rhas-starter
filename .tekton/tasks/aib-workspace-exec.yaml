@@ -45,8 +45,12 @@ spec:
         export JMP_CLIENT_CONFIG="$CONFIG_DIR/$CLIENT_NAME.yaml"
 
         # execute this command
+        # NOTE: intentionally unquoted so the shell splits $WORKSPACE and the
+        # command into separate argv entries for caib (it expects
+        # "workspace exec <name> -- <command...>" as distinct args, not one
+        # combined string).
         WORKSPACE=$(echo "$(params.workspace)" | tr -d '[:space:]')
-        caib "workspace exec $WORKSPACE -- $(params.cmd)"
+        caib workspace exec $WORKSPACE -- $(params.cmd)
 
   workspaces:
     - name: source
