@@ -43,11 +43,12 @@ spec:
         echo "$(oc -n $NAMESPACE get secret $CLIENT_NAME -o jsonpath='{.data.config}' | base64 -d)" > "$CONFIG_DIR/$CLIENT_NAME.yaml"
 
         set -x
-        
+
         # Use the client name provided in the parameter
         jmp config client use $CLIENT_NAME
 
-        # Set the Jumpstarter lease environment variable
+        # Set the Jumpstarter environment variables
+        export JMP_CLIENT_CONFIG="$CONFIG_DIR/$CLIENT_NAME.yaml"
         export JMP_LEASE="$(params.jmp-lease-id)"
         
         # Run the command
