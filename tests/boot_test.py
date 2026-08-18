@@ -31,3 +31,6 @@ class TestBootProcess(JumpstarterTest):
             console.sendline("uname -a")
             console.expect_exact("]#", timeout=10)
             print(console.before.decode())
+
+    def test_fail(self):
+        pytest.fail("Intentional failure")
