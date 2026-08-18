@@ -80,7 +80,7 @@ spec:
         oc -n $NAMESPACE create secret generic $CLIENT_NAME --from-file config=$CONFIG_FILE
 
         # output the client name to the results
-        echo "$CLIENT_NAME" > $(results.jmp-client-name.path)
+        echo $CLIENT_NAME > $(results.jmp-client-name.path)
   
   workspaces:
     - name: source
