@@ -9,16 +9,19 @@ spec:
     - name: cmd
       description: "Bash command to execute"
       type: string
+    - name: image
+      type: string
+      description: "Container image to run. Use to provide own image with extensions"
+      default: "ghcr.io/rhadp/builder:latest"
 
   steps:
     - name: bash
-      image: ghcr.io/rhadp/builder:latest
+      image: "$(params.image)"
       script: |
         #!/usr/bin/env bash
         set -x
 
         source /venv/bin/activate
-
         cd /workspace/source
 
         echo "Executing bash command: '$(params.cmd)'"

@@ -90,11 +90,23 @@ spec:
           - name: output
             workspace: shared-workspace
 
-      - name: build
+      - name: build-rpm
+        taskRef:
+          name: bash
+        runAfter:
+          - clone-repo
+        params:
+          - name: cmd
+            value: "make build-rpm-local"
+        workspaces:
+          - name: source
+            workspace: shared-workspace
+
+      - name: build-os
         taskRef:
           name: aib-build-dev
         runAfter:
-          - clone-repo
+          - build-rpm
         params:
           - name: client-name
             value: $(tasks.setup.results.jmp-client-name)
@@ -120,7 +132,7 @@ spec:
         taskRef:
           name: jmp-get-lease
         runAfter:
-          - build
+          - build-os
         params:
           - name: client-name
             value: $(tasks.setup.results.jmp-client-name)
