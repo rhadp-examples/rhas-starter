@@ -94,6 +94,24 @@ spec:
           - name: output
             workspace: shared-workspace
 
+      - name: get-lease
+        taskRef:
+          name: jmp-get-lease
+        runAfter:
+          - clone-repo
+        params:
+          - name: client-name
+            value: $(tasks.setup.results.jmp-client-name)
+          - name: exporter-labels
+            value: $(params.exporter-labels[*])
+          - name: timeout
+            value: $(params.lease-timeout)
+          - name: lease-duration
+            value: $(params.lease-duration)
+        workspaces:
+          - name: source
+            workspace: shared-workspace
+
       - name: setup-workspace
         taskRef:
           name: aib-workspace-create
@@ -128,10 +146,13 @@ spec:
         taskRef:
           name: aib-build-dev
         runAfter:
+          - get-lease
           - build-rpm
         params:
           - name: client-name
             value: $(tasks.setup.results.jmp-client-name)
+          - name: jmp-lease-id
+            value: $(tasks.get-lease.results.jmp-lease-id)
           - name: run-id
             value: $(context.pipelineRun.name)
           - name: manifest
@@ -152,47 +173,11 @@ spec:
           - name: source
             workspace: shared-workspace
 
-      - name: get-lease
-        taskRef:
-          name: jmp-get-lease
-        runAfter:
-          - build-os
-        params:
-          - name: client-name
-            value: $(tasks.setup.results.jmp-client-name)
-          - name: exporter-labels
-            value: $(params.exporter-labels[*])
-          - name: timeout
-            value: $(params.lease-timeout)
-          - name: lease-duration
-            value: $(params.lease-duration)
-        workspaces:
-          - name: source
-            workspace: shared-workspace
-
-      - name: flash
-        taskRef:
-          name: jmp-run-cmd
-        runAfter:
-          - get-lease
-        params:
-          - name: client-name
-            value: $(tasks.setup.results.jmp-client-name)
-          - name: jmp-lease-id
-            value: $(tasks.get-lease.results.jmp-lease-id)
-          - name: jmp-cmd
-            value: "j flasher flash oci://$(tasks.build-os.results.disk-image)"
-          - name: image
-            value: "ghcr.io/rhadp-examples/rhas-exporter:latest"
-        workspaces:
-          - name: source
-            workspace: shared-workspace
-
       - name: validate
         taskRef:
           name: jmp-run-cmd
         runAfter:
-          - flash
+          - build-os
         params:
           - name: client-name
             value: $(tasks.setup.results.jmp-client-name)
