@@ -41,6 +41,8 @@ spec:
     - name: build-result
       description: "aib results as json string"
       type: string
+    - name: build-name
+      type: string
     - name: build-phase
       type: string
     - name: build-message
@@ -76,6 +78,9 @@ spec:
         # Use the client name provided in the parameter
         jmp config client use $CLIENT_NAME
 
+        # Set the Jumpstarter environment variables
+        export JMP_CLIENT_CONFIG="$CONFIG_DIR/$CLIENT_NAME.yaml"
+
         BUILD_PARAMS="image build-dev $(params.manifest) -n $(params.run-id) --internal-registry --target $(params.target) --arch $(params.architecture) --mode $(params.mode) --format $(params.format) $(params.extra-args) --quiet --output-format json"
         echo "caib $BUILD_PARAMS"
         caib $BUILD_PARAMS > /tmp/aib.json
@@ -84,11 +89,13 @@ spec:
         DISK_IMAGE=$(jq -r '.diskImage' /tmp/aib.json)
         REGISTRY_USER=$(jq -r '.registryUsername' /tmp/aib.json)
         REGISTRY_TOKEN=$(jq -r '.registryToken' /tmp/aib.json)
+        BUILD_NAME=$(jq -r '.name' /tmp/aib.json)
         BUILD_PHASE=$(jq -r '.phase' /tmp/aib.json)
         BUILD_MESSAGE=$(jq -r '.message' /tmp/aib.json)
 
         # return the build results
         cat /tmp/aib.json > $(results.build-result.path)
+        echo $BUILD_NAME > $(results.build-name.path)
         echo $BUILD_PHASE > $(results.build-phase.path)
         echo $BUILD_MESSAGE > $(results.build-message.path)
         echo $DISK_IMAGE > $(results.disk-image.path)

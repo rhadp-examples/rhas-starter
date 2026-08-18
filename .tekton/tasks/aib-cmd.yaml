@@ -38,6 +38,9 @@ spec:
         # Use the client name provided in the parameter
         jmp config client use $CLIENT_NAME
 
+        # Set the Jumpstarter environment variables
+        export JMP_CLIENT_CONFIG="$CONFIG_DIR/$CLIENT_NAME.yaml"
+
         echo "caib $(params.cmd)"
         caib $(params.cmd)
 
