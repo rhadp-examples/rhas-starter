@@ -44,9 +44,6 @@ spec:
         # Set the Jumpstarter environment variables
         export JMP_CLIENT_CONFIG="$CONFIG_DIR/$CLIENT_NAME.yaml"
 
-        # check the status of the workspace
-        caib status
-
         # execute this command
         caib workspace exec $(params.workspace) -- $(params.cmd)
         CAIB_EXIT_CODE=$?

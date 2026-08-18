@@ -76,7 +76,6 @@ spec:
 
         WORKSPACE=$(echo "$(params.workspace)" | tr -d '[:space:]')
         if [ -n "$WORKSPACE" ]; then
-          caib status
           caib workspace delete $WORKSPACE
         fi
 

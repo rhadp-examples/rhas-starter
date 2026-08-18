@@ -53,9 +53,6 @@ spec:
         # Set the Jumpstarter environment variables
         export JMP_CLIENT_CONFIG="$CONFIG_DIR/$CLIENT_NAME.yaml"
 
-        # check the status of the workspace
-        #caib status
-
         # create the workspace
         caib workspace create $(params.workspace) $(params.extra-args)
         
