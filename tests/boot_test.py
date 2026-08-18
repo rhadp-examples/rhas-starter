@@ -27,7 +27,7 @@ class TestBootProcess(JumpstarterTest):
     def test_auto_app(self, client):
         with client.console.pexpect() as console:
             console.sendline("auto-apps")
-            console.expect_exact("]#", timeout=10)
+            console.expect_exact("Hello from AutoSD!", timeout=10)
             print(console.before.decode())
 
 #    @pytest.mark.skip(reason="only enabled to test pipeline failures")

@@ -20,7 +20,7 @@ metadata:
     pipelinesascode.tekton.dev/on-event: "[push,pull_request]"
     pipelinesascode.tekton.dev/on-target-branch: "[main]"
     
-    #pipelinesascode.tekton.dev/on-path-changed: "[src/**]"
+    pipelinesascode.tekton.dev/on-path-changed: "[src/**,manifests/**]"
     pipelinesascode.tekton.dev/cancel-in-progress: "true"
 spec:
   params:
