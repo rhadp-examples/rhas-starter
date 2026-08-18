@@ -16,6 +16,9 @@ spec:
     - name: manifest
       type: string
       description: "The manifest.aib.yml to build"
+    - name: workspace
+      type: string
+      default: ""
     - name: target
       type: string
       description: "Target platform"
@@ -82,7 +85,12 @@ spec:
         # Set the Jumpstarter environment variables
         export JMP_CLIENT_CONFIG="$CONFIG_DIR/$CLIENT_NAME.yaml"
 
-        BUILD_PARAMS="image build-dev $(params.manifest) -n $(params.run-id) --internal-registry --target $(params.target) --arch $(params.architecture) --mode $(params.mode) --format $(params.format) $(params.extra-args) --quiet --output-format json"
+        WORKSPACE=""
+        if [ -n "$(params.workspace)" ]; then
+          WORKSPACE=" --workspace $(params.workspace)"
+        fi
+
+        BUILD_PARAMS="image build-dev $(params.manifest) -n $(params.run-id) --internal-registry $WORKSPACE --target $(params.target) --arch $(params.architecture) --mode $(params.mode) --format $(params.format) $(params.extra-args) --quiet --output-format json"
         echo "caib $BUILD_PARAMS"
         caib $BUILD_PARAMS > /tmp/aib.json
 

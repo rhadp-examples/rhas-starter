@@ -4,7 +4,7 @@ metadata:
   name: jmp-cleanup
 spec:
   description: |
-    Cleanup after using Jumpstarter.
+    Cleanup after using Jumpstarter and caib
   params:
     - name: client-name
       type: string
@@ -13,6 +13,10 @@ spec:
     - name: jmp-lease-id
       type: string
       description: "The lease ID to be released. Does nothing if not provided"
+      default: ""
+    - name: workspace
+      type: string
+      description: "The workspace to delete. Does nothing if not provided"
       default: ""
     - name: namespace
       type: string
@@ -69,6 +73,10 @@ spec:
         # Set the Jumpstarter environment variables
         export JMP_CLIENT_CONFIG="$CONFIG_DIR/$CLIENT_NAME.yaml"
         export JMP_LEASE="$(params.jmp-lease-id)"
+
+        if [ -n "$(params.workspace)" ]; then
+          caib workspace delete $(params.workspace)
+        fi
 
         # remove the lease if provided
         if [ -n "$(params.jmp-lease-id)" ]; then

@@ -13,10 +13,12 @@ metadata:
     pipelinesascode.tekton.dev/task-6: ".tekton/tasks/jmp-run-cmd.yaml"
     pipelinesascode.tekton.dev/task-7: ".tekton/tasks/aib-build-dev.yaml"
     pipelinesascode.tekton.dev/task-8: ".tekton/tasks/aib-cmd.yaml"
+    pipelinesascode.tekton.dev/task-9: ".tekton/tasks/aib-workspace-create.yaml"
+    pipelinesascode.tekton.dev/task-10: ".tekton/tasks/aib-workspace-exec.yaml"
 
     # pipeline events
     pipelinesascode.tekton.dev/on-event: "[push,pull_request]"
-    pipelinesascode.tekton.dev/on-target-branch: "[develop]"
+    pipelinesascode.tekton.dev/on-target-branch: "[main]"
     
     #pipelinesascode.tekton.dev/on-path-changed: "[src/**]"
     pipelinesascode.tekton.dev/cancel-in-progress: "true"
@@ -66,7 +68,7 @@ spec:
       - name: shared-workspace
 
     tasks:
-      - name: setup
+      - name: setup-jmp
         taskRef:
           name: jmp-setup-client
         params:
@@ -82,7 +84,7 @@ spec:
         taskRef:
           name: git-clone
         runAfter:
-          - setup
+          - setup-jmp
         params:
           - name: url
             value: "$(params.repo_url)"
@@ -92,12 +94,30 @@ spec:
           - name: output
             workspace: shared-workspace
 
-      - name: build-rpm
+      - name: setup-workspace
         taskRef:
-          name: bash
+          name: aib-workspace-create
         runAfter:
           - clone-repo
         params:
+          - name: client-name
+            value: $(tasks.setup.results.jmp-client-name)
+          - name: workspace
+            value: $(tasks.setup.results.jmp-client-name)
+        workspaces:
+          - name: source
+            workspace: shared-workspace
+
+      - name: build-rpm
+        taskRef:
+          name: aib-workspace-exec
+        runAfter:
+          - setup-workspace
+        params:
+          - name: client-name
+            value: $(tasks.setup.results.jmp-client-name)
+          - name: workspace
+            value: $(tasks.setup.results.jmp-client-name)
           - name: cmd
             value: "make build-rpm-local"
         workspaces:
@@ -116,6 +136,8 @@ spec:
             value: $(context.pipelineRun.name)
           - name: manifest
             value: "$(params.manifest)"
+          - name: workspace
+            value: $(tasks.setup.results.jmp-client-name)
           - name: target
             value: "qemu"
           - name: architecture
@@ -193,6 +215,8 @@ spec:
             value: $(tasks.setup.results.jmp-client-name)
           - name: jmp-lease-id
             value: $(tasks.get-lease.results.jmp-lease-id)
+          - name: workspace
+            value: $(tasks.setup.results.jmp-client-name)
           - name: namespace
             value: $(params.namespace)
         workspaces:

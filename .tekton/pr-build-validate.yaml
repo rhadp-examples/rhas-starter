@@ -16,7 +16,7 @@ metadata:
 
     # pipeline events
     pipelinesascode.tekton.dev/on-event: "[push,pull_request]"
-    pipelinesascode.tekton.dev/on-target-branch: "[main, release]"
+    pipelinesascode.tekton.dev/on-target-branch: "[noop]"
     
     #pipelinesascode.tekton.dev/on-path-changed: "[src/**]"
     pipelinesascode.tekton.dev/cancel-in-progress: "true"
