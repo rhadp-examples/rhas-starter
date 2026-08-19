@@ -5,16 +5,15 @@ import pytest
 
 from jumpstarter_testing.pytest import JumpstarterTest
 
-
 log = logging.getLogger(__name__)
-
 
 class TestBootProcess(JumpstarterTest):
     selector = "type=qemu"
 
     def test_boot(self, client):
         """Test the boot process of the device."""
-        log.info("Testing boot process")
+        log.info("Testing the boot process of the device")
+        
         client.power.on()
         
         with client.console.pexpect() as console:
@@ -24,7 +23,11 @@ class TestBootProcess(JumpstarterTest):
             console.sendline("password")
             console.expect_exact("]#", timeout=10)
 
+
     def test_auto_app(self, client):
+        """Test the auto-app installation."""
+        log.info("Testing the auto-app installation")
+        
         with client.console.pexpect() as console:
             console.sendline("auto-app")
             console.expect_exact("Hello from AutoSD!", timeout=30)

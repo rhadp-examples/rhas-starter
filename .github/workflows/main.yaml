@@ -1,4 +1,4 @@
-name: build container
+name: build all containers
 on:
   workflow_dispatch:
 

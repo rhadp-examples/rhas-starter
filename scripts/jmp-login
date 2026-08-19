@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+if [ "$#" -ne 1 ]; then
+  echo "Usage: $(basename "$0") <username>" >&2
+  echo "  username: the user to log in as (used to generate the jumpstarter client)" >&2
+  exit 1
+fi
+
+# get the user name from the command line
+USER_NAME=$1
+
 source venv/bin/activate
 
 # prepare the environment
@@ -30,10 +39,7 @@ if [ -z "${JUMPSTARTER_LOGIN_ENDPOINT:-}" ]; then
   JUMPSTARTER_LOGIN_ENDPOINT="https://login.${JUMPSTARTER_NAMESPACE}.apps.${CLUSTER_BASE}"
 fi
 
-# get the user name from the command line
-USER_NAME=$1
-
-# CLIENT_NAME normalization for used in jumpstarter/kubernetes
+# CLIENT_NAME normalization for use in jumpstarter/kubernetes
 CLIENT_NAME=$(echo "$USER_NAME" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9-]/-/g; s/-\+/-/g; s/^-//; s/-$//' | cut -c1-63)
 if oc get client "$CLIENT_NAME" -n $JUMPSTARTER_NAMESPACE &>/dev/null; then
   oc delete client "$CLIENT_NAME" -n $JUMPSTARTER_NAMESPACE &>/dev/null || true
@@ -48,4 +54,4 @@ jmp admin create client $CLIENT_NAME --insecure-tls --unsafe --nointeractive -n 
 jmp login --nointeractive --insecure-tls --unsafe $CLIENT_NAME@$JUMPSTARTER_LOGIN_ENDPOINT
 
 # create the caib client config
-bin/caib login $CAIB_SERVER
+scripts/caib login $CAIB_SERVER

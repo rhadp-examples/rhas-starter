@@ -38,10 +38,11 @@ RHAS_STARTER_VERSION ?= main
 .PHONY: clean local-venv build-local build-rpm-local build-starter-container build-exporter-container
 
 clean:
-	rm -rf src/build src/CMakeCache.txt src/cmake_install.cmake src/CMakeFiles src/auto-app
-	rm -f bin/*.rpm bin/*.tar.gz bin/auto-app src/Makefile src/*.tar.gz src/*.rpm
-	rm -rf bin/repodata
-	rm -f images/*.qcow2
+	rm -rf src/Makefile src/build src/CMakeCache.txt src/cmake_install.cmake src/CMakeFiles src/auto-app 
+	rm -rf src/*.tar.gz src/*.rpm
+	rm -f bin/*.rpm bin/*.tar.gz bin/auto-app bin/repodata
+	rm -f images/*.qcow2 images/*.raw images/*.gz
+	rm -rf .pytest_cache tests/__pycache__
 
 local-venv:
 	uv venv --clear venv

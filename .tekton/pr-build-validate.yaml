@@ -13,12 +13,14 @@ metadata:
     pipelinesascode.tekton.dev/task-6: ".tekton/tasks/jmp-run-cmd.yaml"
     pipelinesascode.tekton.dev/task-7: ".tekton/tasks/aib-build-dev.yaml"
     pipelinesascode.tekton.dev/task-8: ".tekton/tasks/aib-cmd.yaml"
+    pipelinesascode.tekton.dev/task-9: ".tekton/tasks/aib-workspace-create.yaml"
+    pipelinesascode.tekton.dev/task-10: ".tekton/tasks/aib-workspace-exec.yaml"
 
     # pipeline events
     pipelinesascode.tekton.dev/on-event: "[push,pull_request]"
-    pipelinesascode.tekton.dev/on-target-branch: "[noop]"
+    pipelinesascode.tekton.dev/on-target-branch: "[main]"
     
-    #pipelinesascode.tekton.dev/on-path-changed: "[src/**]"
+    pipelinesascode.tekton.dev/on-path-changed: "[src/**,manifests/**]"
     pipelinesascode.tekton.dev/cancel-in-progress: "true"
 spec:
   params:
@@ -33,6 +35,7 @@ spec:
   podTemplate:
     nodeSelector:
       auto.node-role/builder: "true"
+    
     #tolerations:
     #  - key: "architecture"
     #    operator: "equal"
@@ -52,11 +55,12 @@ spec:
       - name: name
         default: rhas-starter
       - name: manifest
-        default: "manifests/minimal.aib.yml"
+        default: "manifests/auto-app.aib.yml"
       - name: exporter-labels
         type: array
         default:
-          - "type=qemu"
+          - "type=virtual"
+          - "device=qemu"
       - name: lease-timeout
         default: "3600"
       - name: lease-duration
@@ -66,7 +70,7 @@ spec:
       - name: shared-workspace
 
     tasks:
-      - name: setup
+      - name: setup-jmp
         taskRef:
           name: jmp-setup-client
         params:
@@ -82,7 +86,7 @@ spec:
         taskRef:
           name: git-clone
         runAfter:
-          - setup
+          - setup-jmp
         params:
           - name: url
             value: "$(params.repo_url)"
@@ -92,18 +96,69 @@ spec:
           - name: output
             workspace: shared-workspace
 
-      - name: build-os
+      - name: get-lease
         taskRef:
-          name: aib-build-dev
+          name: jmp-get-lease
         runAfter:
           - clone-repo
         params:
           - name: client-name
-            value: $(tasks.setup.results.jmp-client-name)
+            value: $(tasks.setup-jmp.results.jmp-client-name)
+          - name: exporter-labels
+            value: $(params.exporter-labels[*])
+          - name: timeout
+            value: $(params.lease-timeout)
+          - name: lease-duration
+            value: $(params.lease-duration)
+        workspaces:
+          - name: source
+            workspace: shared-workspace
+
+      - name: setup-workspace
+        taskRef:
+          name: aib-workspace-create
+        runAfter:
+          - clone-repo
+        params:
+          - name: client-name
+            value: $(tasks.setup-jmp.results.jmp-client-name)
+          - name: workspace
+            value: $(tasks.setup-jmp.results.jmp-client-name)
+        workspaces:
+          - name: source
+            workspace: shared-workspace
+
+      - name: build-rpm
+        taskRef:
+          name: aib-workspace-exec
+        runAfter:
+          - setup-workspace
+        params:
+          - name: client-name
+            value: $(tasks.setup-jmp.results.jmp-client-name)
+          - name: workspace
+            value: $(tasks.setup-jmp.results.jmp-client-name)
+          - name: cmd
+            value: "make build-rpm-local"
+        workspaces:
+          - name: source
+            workspace: shared-workspace
+
+      - name: build-os
+        taskRef:
+          name: aib-build-dev
+        runAfter:
+          - get-lease
+          - build-rpm
+        params:
+          - name: client-name
+            value: $(tasks.setup-jmp.results.jmp-client-name)
           - name: run-id
             value: $(context.pipelineRun.name)
           - name: manifest
             value: "$(params.manifest)"
+          - name: workspace
+            value: $(tasks.setup-jmp.results.jmp-client-name)
           - name: target
             value: "qemu"
           - name: architecture
@@ -118,32 +173,14 @@ spec:
           - name: source
             workspace: shared-workspace
 
-      - name: get-lease
-        taskRef:
-          name: jmp-get-lease
-        runAfter:
-          - build-os
-        params:
-          - name: client-name
-            value: $(tasks.setup.results.jmp-client-name)
-          - name: exporter-labels
-            value: $(params.exporter-labels[*])
-          - name: timeout
-            value: $(params.lease-timeout)
-          - name: lease-duration
-            value: $(params.lease-duration)
-        workspaces:
-          - name: source
-            workspace: shared-workspace
-
       - name: flash
         taskRef:
           name: jmp-run-cmd
         runAfter:
-          - get-lease
+          - build-os
         params:
           - name: client-name
-            value: $(tasks.setup.results.jmp-client-name)
+            value: $(tasks.setup-jmp.results.jmp-client-name)
           - name: jmp-lease-id
             value: $(tasks.get-lease.results.jmp-lease-id)
           - name: jmp-cmd
@@ -161,7 +198,7 @@ spec:
           - flash
         params:
           - name: client-name
-            value: $(tasks.setup.results.jmp-client-name)
+            value: $(tasks.setup-jmp.results.jmp-client-name)
           - name: jmp-lease-id
             value: $(tasks.get-lease.results.jmp-lease-id)
           - name: jmp-cmd
@@ -178,9 +215,11 @@ spec:
           name: jmp-cleanup
         params:
           - name: client-name
-            value: $(tasks.setup.results.jmp-client-name)
+            value: $(tasks.setup-jmp.results.jmp-client-name)
           - name: jmp-lease-id
             value: $(tasks.get-lease.results.jmp-lease-id)
+          - name: workspace
+            value: $(tasks.setup-jmp.results.jmp-client-name)
           - name: namespace
             value: $(params.namespace)
         workspaces:

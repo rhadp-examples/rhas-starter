@@ -1,4 +1,4 @@
-name: reusable container build
+name: multi-arch container build
 
 on:
   workflow_call:
