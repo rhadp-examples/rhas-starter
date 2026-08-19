@@ -2,6 +2,9 @@
 source venv/bin/activate
 set +eux
 
+BUILDER_NAMESPACE="automotive-dev-operator-system"
+JUMPSTARTER_NAMESPACE="auto-jumpstarter"
+
 if [ "$#" -ne 1 ]; then
   echo "Usage: $(basename "$0") GITHUB_PAT" >&2
   echo "  GITHUB_PAT: the GitHub Personal Access Token to use for setting up the buildspace." >&2
@@ -16,6 +19,10 @@ GIT_REMOTE_URL=$(git remote get-url origin)
 GIT_REPO=${GIT_REMOTE_URL#*github.com[:/]}
 GIT_REPO=${GIT_REPO%.git}
 
+# some endpoints
+CONSOLE_URL=$(oc whoami --show-console)
+BASE_URL=${CONSOLE_URL#https://console-openshift-console.}
+
 # create the namespace first
 
 # NAMESPACE normalization for use in kubernetes
@@ -23,12 +30,10 @@ NAMESPACE=$(echo "$GIT_REPO" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9-]
 
 echo "NAMESPACE: $NAMESPACE"
 
-oc get namespace "$NAMESPACE" &>/dev/null && {
-  echo "Namespace $NAMESPACE already exists" >&2
-  exit 1
-}
-
-oc create -f - <<-EOF
+if oc get namespace "$NAMESPACE" &>/dev/null; then
+  echo "Namespace $NAMESPACE already exists"
+else
+  oc create -f - <<-EOF
 kind: Namespace
 apiVersion: v1
 metadata:
@@ -36,6 +41,7 @@ metadata:
   labels:
     app.kubernetes.io/part-of: rhas
 EOF
+fi
 
 echo "Waiting for pipeline serviceaccount in $NAMESPACE..."
 until oc get serviceaccounts -n "$NAMESPACE" 2>/dev/null | grep -q pipeline; do
@@ -50,7 +56,18 @@ oc adm policy add-cluster-role-to-user jumpstarter-access-role "system:serviceac
 oc adm policy add-role-to-group view platform-users -n $NAMESPACE
 oc adm policy add-role-to-group edit platform-users -n $NAMESPACE
 
+# create configmaps
+oc create configmap jumpstarter-devspaces-config -n $NAMESPACE \
+--from-literal=JUMPSTARTER_GRPC_ENDPOINT="grpc.$JUMPSTARTER_NAMESPACE.$BASE_URL" \
+--from-literal=JUMPSTARTER_LOGIN_ENDPOINT="login.$JUMPSTARTER_NAMESPACE.$BASE_URL" \
+--from-literal=JUMPSTARTER_NAMESPACE=$JUMPSTARTER_NAMESPACE
+
+oc create configmap builder-devspaces-config -n $NAMESPACE \
+  --from-literal=CAIB_SERVER="https://ado-build-api-$BUILDER_NAMESPACE.$BASE_URL" \
+  --from-literal=BUILDER_NAMESPACE=$BUILDER_NAMESPACE
+
 # prepare for PAC setup
+PAC_ENDPOINT="https://pipelines-as-code-controller-openshift-pipelines.$BASE_URL"
 
 # Create the webhook secret and create the webhook config secret
 WEBHOOK_SECRET=$(openssl rand -hex 20)
@@ -66,10 +83,6 @@ oc -n $NAMESPACE create secret generic github-webhook-config \
   --from-literal webhook.secret="$WEBHOOK_SECRET"
 
 # PAC endpoint setup
-
-CONSOLE_URL=$(oc whoami --show-console)
-BASE_URL=${CONSOLE_URL#https://console-openshift-console.}
-PAC_ENDPOINT="https://pipelines-as-code-controller-openshift-pipelines.$BASE_URL"
 
 # create the webhook
 HOOK_EXISTS=$(curl -sS \
