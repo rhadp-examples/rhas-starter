@@ -4,7 +4,7 @@ set -e
 
 if [ "$#" -ne 1 ]; then
   echo "Usage: $(basename "$0") <username>" >&2
-  echo "  username: the user to create the namespace for (must run as cluster-admin)." >&2
+  echo "  username: the user to create the devspaces namespace for (must run as cluster-admin)." >&2
   exit 1
 fi
 
