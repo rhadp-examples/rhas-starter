@@ -21,7 +21,7 @@ metadata:
     pipelinesascode.tekton.dev/on-target-branch: "[main]"
     
     pipelinesascode.tekton.dev/on-path-changed: "[src/**,manifests/**]"
-    #pipelinesascode.tekton.dev/cancel-in-progress: "true"
+    pipelinesascode.tekton.dev/cancel-in-progress: "true"
 spec:
   params:
     # git repository (PAC template vars)
