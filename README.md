@@ -32,4 +32,5 @@ TBD: Describe how to configure the workspace, in broad strokes:
   - login to RHAS/Jumpstarter: run command `jmp-login` in the shell, follow the link to Keykloak and login/confirm
   - create the OpenShift Piplines-as-code setup: run script `pac-setup` 
 
+  this is wrong
   
