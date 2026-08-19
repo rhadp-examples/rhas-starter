@@ -54,4 +54,4 @@ jmp admin create client $CLIENT_NAME --insecure-tls --unsafe --nointeractive -n 
 jmp login --nointeractive --insecure-tls --unsafe $CLIENT_NAME@$JUMPSTARTER_LOGIN_ENDPOINT
 
 # create the caib client config
-scripts/caib login $CAIB_SERVER
+#scripts/caib login $CAIB_SERVER
