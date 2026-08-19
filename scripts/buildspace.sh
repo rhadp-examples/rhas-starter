@@ -25,17 +25,17 @@ echo "NAMESPACE: $NAMESPACE"
 
 oc get namespace "$NAMESPACE" &>/dev/null && {
   echo "Namespace $NAMESPACE already exists" >&2
-#  exit 1
+  exit 1
 }
 
-#oc create -f - <<-EOF
-#kind: Namespace
-#apiVersion: v1
-#metadata:
-#  name: $NAMESPACE
-#  labels:
-#    app.kubernetes.io/part-of: rhas
-#EOF
+oc create -f - <<-EOF
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: $NAMESPACE
+  labels:
+    app.kubernetes.io/part-of: rhas
+EOF
 
 echo "Waiting for pipeline serviceaccount in $NAMESPACE..."
 until oc get serviceaccounts -n "$NAMESPACE" 2>/dev/null | grep -q pipeline; do
