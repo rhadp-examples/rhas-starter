@@ -54,11 +54,13 @@ local-venv:
 		"git+$(RHAS_STARTER_REPO)@$(RHAS_STARTER_VERSION)#subdirectory=packages/rhas-driver-power"
 
 build-local: clean
+	mkdir -p bin
 	cmake -B src/build src -DAPP_VERSION=$(VERSION) -DAPP_GIT_REV=$(GIT_REV)
 	cmake --build src/build
 	cp src/build/auto-app bin/
 
 build-rpm-local: clean
+	mkdir -p $(CURDIR)/bin
 	cd /tmp && \
 	  NAME=auto-app && \
 	  VERSION=$(VERSION) && \
