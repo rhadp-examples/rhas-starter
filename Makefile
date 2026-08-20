@@ -56,7 +56,6 @@ build-local: clean
 
 build-rpm-local: clean
 	mkdir -p $(CURDIR)/bin
-	ls -la $(CURDIR)
 	cd /tmp && \
 	  NAME=auto-app && \
 	  VERSION=$(VERSION) && \
@@ -71,8 +70,6 @@ build-rpm-local: clean
 	  cp $${RPMBUILD}/RPMS/*/*.rpm $(CURDIR)/bin/ && \
 	  rm -rf $${NAME}-$${VERSION} $${NAME}-$${VERSION}.tar.gz $${RPMBUILD}
 	createrepo_c --update $(CURDIR)/bin
-	ls -la $(CURDIR)/bin
-	ls -la $(CURDIR)/bin/repodata
 	  
 build-starter-container:
 	$(CONTAINER_TOOL) build $(BUILD_ARGS) \
