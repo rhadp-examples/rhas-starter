@@ -10,9 +10,9 @@ spec:
       type: string
       description: "The jumpstarter client config"
       default: "default"
-    - name: run-id
+    - name: build-name
       type: string
-      description: "The pipeline run ID"
+      description: "The build name to use for the asset creation"
     - name: manifest
       type: string
       description: "The manifest.aib.yml to build"
@@ -89,7 +89,7 @@ spec:
           WORKSPACE="--workspace $WORKSPACE"
         fi
 
-        BUILD_PARAMS="image build-dev $(params.manifest) -n $(params.run-id) --internal-registry $WORKSPACE --target $(params.target) --arch $(params.architecture) --mode $(params.mode) --format $(params.format) $(params.extra-args) --quiet --output-format json"
+        BUILD_PARAMS="image build-dev $(params.manifest) -n $(params.build-name) --internal-registry $WORKSPACE --target $(params.target) --arch $(params.architecture) --mode $(params.mode) --format $(params.format) $(params.extra-args) --quiet --output-format json"
         echo "caib $BUILD_PARAMS"
         caib $BUILD_PARAMS > /tmp/aib.json
         CAIB_EXIT_CODE=$?
