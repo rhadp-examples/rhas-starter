@@ -26,7 +26,7 @@ BASE_URL=${CONSOLE_URL#https://console-openshift-console.}
 # create the namespace first
 
 # NAMESPACE normalization for use in kubernetes
-NAMESPACE=$(echo "$GIT_REPO" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9-]/-/g; s/-\+/-/g; s/^-//; s/-$//' | cut -c1-63)-buildspace
+NAMESPACE=buildspace-$(echo "$GIT_REPO" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-zA-Z0-9-]/-/g; s/-\+/-/g; s/^-//; s/-$//' | cut -c1-63)
 
 echo "NAMESPACE: $NAMESPACE"
 

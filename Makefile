@@ -1,13 +1,13 @@
 # Default registry and namespace
 REGISTRY ?= ghcr.io
-NAMESPACE ?= rhadp-examples
+ORG ?= rhadp-examples
 
 # Build tool
 CONTAINER_TOOL ?= podman
 
 # Image name and tag
-STARTER_CONTAINER_IMAGE := ghcr.io/rhadp-examples/rhas-starter
-EXPORTER_CONTAINER_IMAGE := ghcr.io/rhadp-examples/rhas-exporter
+STARTER_CONTAINER_IMAGE := ghcr.io/$(ORG)/rhas-starter
+EXPORTER_CONTAINER_IMAGE := ghcr.io/$(ORG)/rhas-exporter
 TAG ?= latest
 
 # Build arguments
@@ -21,11 +21,6 @@ BUILD_ARGS ?= --build-arg TARGETARCH=$(shell uname -m | sed 's/x86_64/amd64/')
 # explicit override via "make VERSION=x ...".
 VERSION := 0.1
 GIT_REV := $(shell git rev-parse --short HEAD 2>/dev/null || echo unknown)
-
-# AutoSD (RHIVOS) image build
-AUTOSD_MANIFEST ?= manifests/auto-app.aib.yml
-AUTOSD_IMAGE ?= images/auto-app-autosd.qcow2
-AUTOSD_TARGET ?= qemu
 
 # Fork of Jumstarter with some patches not yet on upstream
 JUMPSTARTER_REPO ?= https://github.com/mickume/jumpstarter
