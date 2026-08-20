@@ -139,7 +139,7 @@ spec:
           - name: workspace
             value: $(tasks.setup-jmp.results.jmp-client-name)
           - name: cmd
-            value: "make build-rpm-local && ls -la ./bin && ls -la ./bin/repodata"
+            value: "make build-rpm-local && ls -la && ls -la ./repodata"
         workspaces:
           - name: source
             workspace: shared-workspace
