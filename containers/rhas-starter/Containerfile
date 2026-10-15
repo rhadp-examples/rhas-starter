@@ -14,8 +14,8 @@ ENV ARCH=${TARGETARCH:-arm64} \
 ENV UV_PYTHON=python3.14 VIRTUAL_ENV=/venv
 
 # TODO: add yoour own modifications here
-ENV JUMPSTARTER_REPO=https://github.com/mickume/jumpstarter \
-    JUMPSTARTER_VERSION=develop \
+ENV JUMPSTARTER_REPO=https://github.com/jumpstarter-dev/jumpstarter \
+    JUMPSTARTER_VERSION=main \
     RHAS_STARTER_REPO=https://github.com/rhadp-examples/rhas-starter \
     RHAS_STARTER_VERSION=main
 
