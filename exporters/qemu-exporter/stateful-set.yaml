@@ -126,8 +126,6 @@ spec:
               value: "auto-jumpstarter"
             - name: OCI_USERNAME
               value: "serviceaccount"
-            - name: OCI_PASSWORD_FILE
-              value: "/var/run/secrets/kubernetes.io/serviceaccount/token"
           command:
             - /bin/bash
             - -c
@@ -150,6 +148,12 @@ spec:
               TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
               NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
               API_SERVER=$(oc whoami --show-server)
+
+              # upstream jumpstarter's OCI credential resolution only reads
+              # OCI_USERNAME/OCI_PASSWORD from the environment (no *_FILE
+              # fallback), so export the SA token here rather than pointing
+              # OCI_PASSWORD_FILE at it
+              export OCI_PASSWORD="$TOKEN"
 
               # set ./kube/config correctly
               mkdir -p ~/.kube
