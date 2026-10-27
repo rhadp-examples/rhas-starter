@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-source venv/bin/activate
+
 set +eux
 
 BUILDER_NAMESPACE="automotive-dev-operator-system"

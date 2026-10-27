@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+set -e
+
 NAMESPACE=automotive-dev-operator-system
 
 # Cleanup image builds. This will eventually also delete PipelineRuns and TasksRuns etc.
