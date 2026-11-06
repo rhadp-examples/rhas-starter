@@ -1,4 +1,5 @@
 FROM ghcr.io/rhadp/codespaces:latest
+# see https://github.com/rhadp/containers/blob/main/containers/codespaces/Containerfile
 
 USER root
 
@@ -14,8 +15,8 @@ ENV ARCH=${TARGETARCH:-arm64} \
 ENV UV_PYTHON=python3.14 VIRTUAL_ENV=/venv
 
 # TODO: add yoour own modifications here
-ENV JUMPSTARTER_REPO=https://github.com/jumpstarter-dev/jumpstarter \
-    JUMPSTARTER_VERSION=main \
+ENV JUMPSTARTER_REPO=https://github.com/mickume/jumpstarter \
+    JUMPSTARTER_VERSION=develop \
     RHAS_STARTER_REPO=https://github.com/rhadp-examples/rhas-starter \
     RHAS_STARTER_VERSION=main
 
