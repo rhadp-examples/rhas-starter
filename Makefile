@@ -71,6 +71,23 @@ build-rpm-local: clean
 	  rm -rf $${NAME}-$${VERSION} $${NAME}-$${VERSION}.tar.gz $${RPMBUILD}
 	createrepo_c --update $(CURDIR)/bin
 	  
+build-rpm-workspace: clean
+	mkdir -p /workspace/export
+	cd /tmp && \
+	  NAME=auto-app && \
+	  VERSION=$(VERSION) && \
+	  RPMBUILD=/tmp/rpmbuild && \
+	  cp -r $(CURDIR)/src $${NAME}-$${VERSION} && \
+	  tar czf $${NAME}-$${VERSION}.tar.gz $${NAME}-$${VERSION} && \
+	  mkdir -p $${RPMBUILD}/{SOURCES,SPECS} && \
+	  cp $${NAME}-$${VERSION}.tar.gz $${RPMBUILD}/SOURCES/ && \
+	  cp $${NAME}-$${VERSION}/auto-app.spec $${RPMBUILD}/SPECS/ && \
+	  rpmbuild --define "_topdir $${RPMBUILD}" -ba $${RPMBUILD}/SPECS/auto-app.spec && \
+	  cp $${RPMBUILD}/SOURCES/*.tar.gz /workspace/export/ && \
+	  cp $${RPMBUILD}/RPMS/*/*.rpm /workspace/export/ && \
+	  rm -rf $${NAME}-$${VERSION} $${NAME}-$${VERSION}.tar.gz $${RPMBUILD}
+	createrepo_c --update /workspace/export
+
 build-starter-container:
 	$(CONTAINER_TOOL) build $(BUILD_ARGS) \
 		-f containers/rhas-starter/Containerfile \
