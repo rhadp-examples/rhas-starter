@@ -215,7 +215,7 @@ content:
         Image=localhost/auto-apps
         Network=none
         Environment=SOCKET_PATH=/run/vsomeip/vsomeip-0
-        Environment=ENGINE_DEMO_CPU_MS=300
+        Environment=ENGINE_DEMO_CPU_MS=400
         Environment=ENGINE_DEMO_HOLD_MUTEX=0
         Environment=ENGINE_DEMO_RAM_SIZE=10M
         Volume=/var/run/vsomeip/:/var/run/vsomeip/
