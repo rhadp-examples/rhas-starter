@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: qemu-exporter
+  name: qemu-metal-exporter
   annotations:
     argocd.argoproj.io/sync-wave: "1"
 spec:
   replicas: 5
-  serviceName: qemu-exporter
+  serviceName: qemu-metal-exporter
   podManagementPolicy: Parallel
   selector:
     matchLabels:
-      app: qemu-exporter
+      app: qemu-metal-exporter
   template:
     metadata:
       labels:
-        app: qemu-exporter
+        app: qemu-metal-exporter
     annotations:
         openshift.io/required-scc: privileged
     spec:
@@ -32,7 +32,7 @@ spec:
                 operator: In
                 values:
                 - "true"
-      serviceAccountName: qemu-exporter
+      serviceAccountName: qemu-metal-exporter
       restartPolicy: Always
       # give the preStop hook below enough time to run `oc delete exporter`
       # before kubelet moves on to SIGTERM/SIGKILL
@@ -68,15 +68,15 @@ spec:
                 --server=$API_SERVER \
                 --certificate-authority=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
 
-              oc config set-credentials qemu-exporter \
+              oc config set-credentials qemu-metal-exporter \
                 --token=$TOKEN
 
-              oc config set-context qemu-exporter-ctx \
+              oc config set-context qemu-metal-exporter-ctx \
                 --cluster=rhas \
-                --user=qemu-exporter \
+                --user=qemu-metal-exporter \
                 --namespace=$NAMESPACE
 
-              oc config use-context qemu-exporter-ctx
+              oc config use-context qemu-metal-exporter-ctx
 
               # check if exporter already exists and delete it if so ...
 
@@ -162,15 +162,15 @@ spec:
                 --server=$API_SERVER \
                 --certificate-authority=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
 
-              oc config set-credentials qemu-exporter \
+              oc config set-credentials qemu-metal-exporter \
                 --token=$TOKEN
 
-              oc config set-context qemu-exporter-ctx \
+              oc config set-context qemu-metal-exporter-ctx \
                 --cluster=rhadp \
-                --user=qemu-exporter \
+                --user=qemu-metal-exporter \
                 --namespace=$NAMESPACE
 
-              oc config use-context qemu-exporter-ctx
+              oc config use-context qemu-metal-exporter-ctx
 
               # create the exporter config
               EXPORTER_NAME=$(cat /etc/hostname)
@@ -191,7 +191,7 @@ spec:
               done
               echo "$ENDPOINT" > endpoint
 
-              cat <<EOF > qemu-exporter.yaml
+              cat <<EOF > qemu-metal-exporter.yaml
               apiVersion: jumpstarter.dev/v1alpha1
               kind: ExporterConfig
               metadata:
@@ -228,7 +228,7 @@ spec:
 
               echo "Starting the exporter ..."
 
-              jmp run --exporter-config qemu-exporter.yaml
+              jmp run --exporter-config qemu-metal-exporter.yaml
 
               #while true; do
               #  sleep 30s
