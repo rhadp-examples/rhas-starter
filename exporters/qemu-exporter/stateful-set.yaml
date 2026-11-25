@@ -92,8 +92,8 @@ spec:
           imagePullPolicy: Always
           resources:
             limits:
-              cpu: 2.0
-              memory: "4G"
+              cpu: 2.5
+              memory: "5G"
             requests:
               cpu: 1.0
               memory: "2G"
@@ -126,6 +126,8 @@ spec:
               value: "auto-jumpstarter"
             - name: OCI_USERNAME
               value: "serviceaccount"
+            - name: UPDATE_DRIVERS
+              value: "1"
           command:
             - /bin/bash
             - -c
@@ -133,17 +135,17 @@ spec:
               set -eo pipefail
               source /venv/bin/activate
 
-              # debugging - update to latest jumpstarter version
-              #uv pip install --reinstall "git+https://github.com/mickume/jumpstarter@develop#subdirectory=python/packages/jumpstarter-all"
-
-              # reinstall rhas drivers so their entry points survive the jumpstarter-all reinstall above
-              #uv pip install --reinstall /opt/rhas-driver-qemu /opt/rhas-driver-opendal /opt/rhas-driver-power
-
-              uv pip install --reinstall \
-                "git+${JUMPSTARTER_REPO}@${JUMPSTARTER_VERSION}#subdirectory=python/packages/jumpstarter-all" \
-                "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-qemu" \
-                "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-opendal" \
-                "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-power"
+              # debugging - update to latest jumpstarter version and qemu drivers
+              
+              if [ "$UPDATE_DRIVERS" = "1" ]; then
+                echo "Updating jumpstarter version and qemu drivers ..."
+                
+                uv pip install --reinstall \
+                  "git+${JUMPSTARTER_REPO}@${JUMPSTARTER_VERSION}#subdirectory=python/packages/jumpstarter-all" \
+                  "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-qemu" \
+                  "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-opendal" \
+                  "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-power"
+              fi  
 
               # Trust the internal registry's service-serving CA
               if [ -f /etc/pki/ca-trust/source/anchors/service-ca-bundle.crt ]; then
@@ -223,7 +225,7 @@ spec:
                   type: rhas_driver_qemu.driver.Qemu
                   config:
                     smp: 2
-                    mem: 12G
+                    mem: 4G
                     arch: aarch64
                     default_partitions:
                       OVMF_CODE.fd: /usr/share/AAVMF/AAVMF_CODE.fd
