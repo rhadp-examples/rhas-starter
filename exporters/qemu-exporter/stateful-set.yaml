@@ -18,11 +18,6 @@ spec:
     annotations:
         openshift.io/required-scc: privileged
     spec:
-      #tolerations:
-      #- key: "metal"
-      #  operator: "Equal"
-      #  value: "true"
-      #  effect: "NoSchedule"
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -36,7 +31,7 @@ spec:
       restartPolicy: Always
       # give the preStop hook below enough time to run `oc delete exporter`
       # before kubelet moves on to SIGTERM/SIGKILL
-      terminationGracePeriodSeconds: 60
+      terminationGracePeriodSeconds: 30
       volumes:
         - name: registry-ca
           configMap:
@@ -136,10 +131,9 @@ spec:
               source /venv/bin/activate
 
               # debugging - update to latest jumpstarter version and qemu drivers
-              
               if [ "$UPDATE_DRIVERS" = "1" ]; then
                 echo "Updating jumpstarter version and qemu drivers ..."
-                
+
                 uv pip install --reinstall \
                   "git+${JUMPSTARTER_REPO}@${JUMPSTARTER_VERSION}#subdirectory=python/packages/jumpstarter-all" \
                   "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-qemu" \
@@ -236,10 +230,9 @@ spec:
                         guestport: 22
               EOF
 
-              sleep 60s
+              sleep 30s
 
               echo "Starting the exporter ..."
-
               jmp run --exporter-config qemu-exporter.yaml
 
               #while true; do
