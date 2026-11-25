@@ -61,7 +61,7 @@ ENV JUMPSTARTER_REPO=https://github.com/mickume/jumpstarter \
 
 # install basic packages & virtualization packages
 ARG CENTOS_STREAM_VERSION=10.0-23.el10 \
-    FLASHER_VERSION=0.3.0
+    FLASHER_VERSION=0.4.1
 
 # UBI10 doesn't ship qemu-kvm/libvirt/the @virtualization-* groups, and this
 # build environment has no RHEL entitlement (subscription-manager) to reach
