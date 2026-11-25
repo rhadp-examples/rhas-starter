@@ -251,6 +251,21 @@ class QemuPower(PowerInterface, Driver):
             f"/dev/kvm is not available and {qemu_system} is not installed"
         )
 
+    def _default_cpu(self, accel: Literal["kvm", "tcg"] | None) -> str | None:
+        """CPU model to use when the config does not set ``cpu``."""
+        if accel == "kvm":
+            return "host"
+
+        match self.parent.arch:
+            case "aarch64":
+                # cortex-a57 is deprecated in RHEL 10 qemu-kvm. 'max' is the
+                # suggested replacement; pauth-impdef swaps the very slow
+                # emulated QARMA pointer-auth algorithm for a cheap one.
+                return "max,pauth-impdef=on"
+            case "x86_64":
+                return "qemu64,+ssse3,+sse4.1,+sse4.2,+popcnt"
+        return None
+
     @export
     async def on(self) -> None:  # noqa: C901
         if hasattr(self, "_process"):
@@ -278,21 +293,14 @@ class QemuPower(PowerInterface, Driver):
                 accel,
             ]
 
-        if accel == "kvm" and cpu is None:
-            cpu = "host"
+        if cpu is None:
+            cpu = self._default_cpu(accel)
 
         match self.parent.arch:
             case "aarch64":
                 cmdline += ["-machine", "virt"]
             case "x86_64":
                 cmdline += ["-machine", "q35"]
-
-        if cpu is None:
-            match self.parent.arch:
-                case "aarch64":
-                    cpu = "cortex-a57"
-                case "x86_64":
-                    cpu = "qemu64,+ssse3,+sse4.1,+sse4.2,+popcnt"
 
         cmdline += [
             "-cpu",

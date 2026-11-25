@@ -67,3 +67,17 @@ def test_no_usable_qemu_raises_clear_error(host):
 
 def test_sidecar_assumes_qemu_kvm_with_kvm(host, tmp_path):
     assert select(launcher_socket=str(tmp_path / "launcher.sock")) == ("/usr/libexec/qemu-kvm", "kvm")
+
+
+@pytest.mark.parametrize(
+    "arch, accel, expected",
+    [
+        ("aarch64", "kvm", "host"),
+        ("aarch64", "tcg", "max,pauth-impdef=on"),
+        ("aarch64", None, "max,pauth-impdef=on"),
+        ("x86_64", "kvm", "host"),
+        ("x86_64", None, "qemu64,+ssse3,+sse4.1,+sse4.2,+popcnt"),
+    ],
+)
+def test_default_cpu(arch, accel, expected):
+    assert Qemu(arch=arch).children["power"]._default_cpu(accel) == expected
