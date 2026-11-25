@@ -139,8 +139,11 @@ spec:
               # reinstall rhas drivers so their entry points survive the jumpstarter-all reinstall above
               #uv pip install --reinstall /opt/rhas-driver-qemu /opt/rhas-driver-opendal /opt/rhas-driver-power
 
-              echo "RHAS_STARTER_REPO: $RHAS_STARTER_REPO"
-              echo "RHAS_STARTER_VERSION: $RHAS_STARTER_VERSION"
+              uv pip install --reinstall --force-reinstall \
+                "git+${JUMPSTARTER_REPO}@${JUMPSTARTER_VERSION}#subdirectory=python/packages/jumpstarter-all" \
+                "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-qemu" \
+                "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-opendal" \
+                "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-power"
 
               # Trust the internal registry's service-serving CA
               if [ -f /etc/pki/ca-trust/source/anchors/service-ca-bundle.crt ]; then
@@ -180,6 +183,8 @@ spec:
 
               # delete the exporter if it already exists
               timeout 30s oc delete exporter "$EXPORTER_NAME" -n "$JMP_NAMESPACE" --ignore-not-found || true
+
+              # create the exporter config
               jmp admin create exporter "$EXPORTER_NAME" -n $JMP_NAMESPACE --label type=virtual --label device=qemu --label arch=arm64_vm --save --insecure-tls --nointeractive --out ./dummy.yaml
               TOKEN=$(yq '.token' dummy.yaml)
               echo "$TOKEN" > token
