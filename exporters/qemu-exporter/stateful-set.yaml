@@ -139,7 +139,7 @@ spec:
               # reinstall rhas drivers so their entry points survive the jumpstarter-all reinstall above
               #uv pip install --reinstall /opt/rhas-driver-qemu /opt/rhas-driver-opendal /opt/rhas-driver-power
 
-              uv pip install --reinstall --force-reinstall \
+              uv pip install --reinstall \
                 "git+${JUMPSTARTER_REPO}@${JUMPSTARTER_VERSION}#subdirectory=python/packages/jumpstarter-all" \
                 "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-qemu" \
                 "git+${RHAS_STARTER_REPO}@${RHAS_STARTER_VERSION}#subdirectory=packages/rhas-driver-opendal" \
