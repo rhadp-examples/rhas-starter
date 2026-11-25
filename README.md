@@ -27,8 +27,8 @@ There are two ways to build and validate:
 
 Open this repository in OpenShift DevSpaces to get a pre-configured workspace with all required tools (CMake, rpmbuild, `caib` CLI, Jumpstarter CLI).
 
-1. Build the application: `make build-local`
-2. Build the RPM: `make build-rpm-local`
+- Build the application: `make build-local`
+- Build the RPM: `make build-rpm-local`
 
 See the Makefile for all available targets.
 
