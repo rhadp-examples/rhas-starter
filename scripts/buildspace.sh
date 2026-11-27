@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set +eux
+set -euo pipefail
 
 BUILDER_NAMESPACE="automotive-dev-operator-system"
 JUMPSTARTER_NAMESPACE="auto-jumpstarter"
@@ -72,6 +72,7 @@ PAC_ENDPOINT="https://pipelines-as-code-controller-openshift-pipelines.$BASE_URL
 # Create the webhook secret and create the webhook config secret
 WEBHOOK_SECRET=$(openssl rand -hex 20)
 
+# create the webhook config secret used by the PAC controller to trigger the pipeline
 if oc get secret github-webhook-config -n "$NAMESPACE" &>/dev/null; then
   oc delete secret github-webhook-config -n "$NAMESPACE"
   echo "Waiting for secret github-webhook-config to be deleted..."
@@ -81,6 +82,30 @@ fi
 oc -n $NAMESPACE create secret generic github-webhook-config \
   --from-literal provider.token="$GIT_PAT" \
   --from-literal webhook.secret="$WEBHOOK_SECRET"
+
+# create the github auth config secret used by the pipeline to clone the repository
+if oc get secret github-auth-config -n "$NAMESPACE" &>/dev/null; then
+  oc delete secret github-auth-config -n "$NAMESPACE"
+  echo "Waiting for secret github-auth-config to be deleted..."
+  sleep 10
+fi
+
+oc create -f - <<-EOF
+kind: Secret
+apiVersion: v1
+metadata:
+  name: github-auth-config
+  namespace: $NAMESPACE
+  labels:
+    app.kubernetes.io/part-of: rhas
+type: Opaque
+stringData:
+  .gitconfig: |
+    [credential "https://github.com"]
+      helper = store
+  .git-credentials: |
+    https://${GIT_USERNAME}:${GIT_PAT}@github.com
+EOF
 
 # PAC endpoint setup
 
